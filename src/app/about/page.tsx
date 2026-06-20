@@ -74,30 +74,30 @@ export default function AboutPage() {
       {/* HERO / BIO */}
       <section className="relative overflow-hidden border-b border-border/60">
         <div className="absolute inset-0 bg-radial-red" aria-hidden />
-        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-14 sm:py-20 md:py-24">
+          <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-2">
             <div className="space-y-5">
               <Badge variant="outline" className="border-primary/40 text-primary">
                 About
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
+              <h1 className="text-[2.5rem] leading-[0.95] font-bold tracking-tight sm:text-5xl md:text-6xl">
                 Hey, I&apos;m{" "}
                 <span className="text-gradient-red">your coach.</span>
               </h1>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-base text-muted-foreground sm:text-lg">
                 For over a decade I&apos;ve been helping busy humans, weekend
                 warriors, and competitive athletes build strength, lose fat,
                 and move pain-free. No gimmicks — just honest programming,
                 tight coaching, and the right amount of pressure.
               </p>
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Button asChild size="lg">
+              <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center">
+                <Button asChild size="lg" className="w-full sm:w-auto">
                   <Link href="/coaching#book">
                     Book a session
                     <ArrowRight className="ml-1 size-4" />
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline">
+                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
                   <Link href="#contact">Send a message</Link>
                 </Button>
               </div>
@@ -106,14 +106,17 @@ export default function AboutPage() {
               label="Portrait of the coach"
               ratio="portrait"
               className="shadow-2xl shadow-primary/20"
+              src="/elek5.png"
+              objectPosition="center 20%"
+              priority
             />
           </div>
         </div>
       </section>
 
       {/* CREDENTIALS */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid gap-10 lg:grid-cols-3">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+        <div className="grid gap-8 sm:gap-10 lg:grid-cols-3">
           <div className="space-y-3">
             <Badge variant="secondary" className="bg-primary/10 text-primary">
               Credentials
@@ -147,12 +150,27 @@ export default function AboutPage() {
 
       {/* VALUES + IMAGE STRIP */}
       <section className="bg-card/40 border-y border-border/60">
-        <div className="container mx-auto grid gap-10 px-4 sm:px-6 lg:px-8 py-20 lg:grid-cols-2">
-          <div className="grid grid-cols-2 gap-4">
-            <ImagePlaceholder label="Studio detail" ratio="portrait" />
-            <div className="space-y-4 pt-10">
-              <ImagePlaceholder label="Coaching cue" ratio="square" />
-              <ImagePlaceholder label="Athlete training" ratio="square" />
+        <div className="container mx-auto grid gap-10 px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <ImagePlaceholder
+              label="Studio detail"
+              ratio="portrait"
+              src="/elek1.JPG"
+              objectPosition="center 20%"
+            />
+            <div className="space-y-3 pt-10 sm:space-y-4">
+              <ImagePlaceholder
+                label="Coaching cue"
+                ratio="square"
+                src="/elek2.JPG"
+                objectPosition="center 38%"
+              />
+              <ImagePlaceholder
+                label="Athlete training"
+                ratio="square"
+                src="/elek4.PNG"
+                objectPosition="center 38%"
+              />
             </div>
           </div>
           <div className="space-y-5">
@@ -178,9 +196,9 @@ export default function AboutPage() {
       {/* CONTACT */}
       <section
         id="contact"
-        className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24 scroll-mt-20"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 scroll-mt-20"
       >
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr]">
+        <div className="grid gap-10 sm:gap-12 lg:grid-cols-[1fr_1.1fr]">
           <div className="space-y-6">
             <Badge variant="outline" className="border-primary/40 text-primary">
               Contact
@@ -241,7 +259,11 @@ export default function AboutPage() {
             </div>
 
             <div className="pt-2">
-              <ImagePlaceholder label="Studio exterior" ratio="wide" />
+              <ImagePlaceholder
+                label="Studio exterior"
+                ratio="wide"
+                src="/elek3.JPG"
+              />
             </div>
           </div>
 

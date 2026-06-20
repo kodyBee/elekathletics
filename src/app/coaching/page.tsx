@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Check,
-  Sparkles,
-  Users,
-  Globe,
   Clock,
   Calendar as CalendarIcon,
 } from "lucide-react";
@@ -37,48 +34,99 @@ export const metadata: Metadata = {
 
 const plans = [
   {
-    name: "Drop-in Session",
-    price: "$90",
-    cadence: "per session",
-    icon: Users,
-    description: "Pay-as-you-go 1-on-1 training at the studio.",
+    name: "Online Training Premium",
+    category: "Online Coaching",
+    price: "$350",
+    cadence: "per month",
+    description:
+      "The flagship online program — fully customized training and ongoing coaching support.",
     features: [
-      "60-minute session",
-      "Personalized warm-up & lift",
-      "Form coaching on every set",
-      "Take-home workout notes",
+      "Custom weekly programming built around your goals",
+      "Video form reviews and exercise breakdowns",
+      "Direct messaging with Jon throughout the week",
+      "Progress tracking and regular plan updates",
+    ],
+    cta: "Start coaching",
+    highlight: true,
+  },
+  {
+    name: "In-Person @ Wnrs Circle",
+    category: "Studio Training",
+    price: "$90",
+    cadence: "per hour",
+    description:
+      "1-on-1 training at the Wnrs Circle studio in Burbank, CA.",
+    features: [
+      "60-minute 1-on-1 session",
+      "Hands-on coaching every set",
+      "Personalized warm-up & main lift focus",
+      "Take-home notes after each session",
     ],
     cta: "Book a session",
     highlight: false,
   },
   {
-    name: "Coaching Membership",
-    price: "$320",
-    cadence: "per month",
-    icon: Sparkles,
-    description: "Most popular — 1-on-1 sessions plus full programming.",
+    name: "In-Person Outside Wnrs Circle",
+    category: "On-Location Training",
+    price: "$135",
+    cadence: "per hour",
+    description:
+      "On-site training at the gym or location of your choice.",
     features: [
-      "4 in-person sessions / month",
-      "Custom weekly programming",
-      "Nutrition framework & check-ins",
-      "Unlimited Slack support",
+      "60-minute 1-on-1 session at your gym",
+      "Full programming for the session",
+      "Travel within agreed area included",
+      "Ideal for athletes with home or private setups",
     ],
-    cta: "Start membership",
-    highlight: true,
+    cta: "Request a session",
+    highlight: false,
   },
   {
-    name: "Online Coaching",
-    price: "$220",
-    cadence: "per month",
-    icon: Globe,
-    description: "Train anywhere with a fully customized program.",
+    name: "Nutrition Plan",
+    category: "Nutrition",
+    price: "$175",
+    cadence: "one-time",
+    description:
+      "A custom nutrition plan dialed to your body, goals, and schedule.",
     features: [
-      "Weekly programming in TrainHeroic",
-      "Video form reviews (48h turnaround)",
-      "Bi-weekly video check-ins",
-      "Nutrition guidance",
+      "Personalized macro and calorie targets",
+      "Meal structure & food guidance",
+      "Built around training and recovery",
+      "Delivered as an easy-to-follow plan",
     ],
-    cta: "Apply for online",
+    cta: "Get your plan",
+    highlight: false,
+  },
+  {
+    name: "In-Person Posing",
+    category: "Posing",
+    price: "$90",
+    cadence: "per 45 min",
+    description:
+      "Men's Physique posing coaching, in person at the studio.",
+    features: [
+      "45-minute focused posing session",
+      "Mandatories & quarter-turn refinement",
+      "Stage presentation & transitions",
+      "Pre-show prep and feedback",
+    ],
+    cta: "Book posing",
+    highlight: false,
+  },
+  {
+    name: "Online Posing",
+    category: "Posing",
+    price: "$70",
+    cadence: "per 45 min",
+    description:
+      "Men's Physique posing coaching over video from anywhere.",
+    features: [
+      "45-minute live video session",
+      "Mandatories & stage walk review",
+      "Personalized cues and homework",
+      "Recordings reviewed between sessions",
+    ],
+    cta: "Book online posing",
     highlight: false,
   },
 ];
@@ -108,38 +156,97 @@ export default function CoachingPage() {
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-border/60">
         <div className="absolute inset-0 bg-radial-red" aria-hidden />
-        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-14 sm:py-20 md:py-24">
           <div className="max-w-3xl space-y-5">
             <Badge variant="outline" className="border-primary/40 text-primary">
               Coaching & Booking
             </Badge>
-            <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-              Pick the plan.{" "}
-              <span className="text-gradient-red">Show up.</span> Get strong.
+            <h1 className="text-[2.5rem] leading-[0.95] font-bold tracking-tight sm:text-5xl md:text-6xl">
+              Start with a{" "}
+              <span className="text-gradient-red">conversation.</span>
             </h1>
-            <p className="max-w-2xl text-lg text-muted-foreground">
-              Every package is personal. Choose the format that fits your life
-              and book your first session in under a minute.
+            <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
+              Not sure which plan is right for you? Let's hop on a free 15-minute 
+              call to discuss your goals and find the perfect fit.
             </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <Button asChild size="lg">
-                <Link href="#book">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <Button asChild size="lg" className="w-full sm:w-auto">
+                <Link href="#consultation">
                   <CalendarIcon className="mr-2 size-4" />
-                  Jump to booking
+                  Book free consult
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="#plans">Compare plans</Link>
+              <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+                <Link href="#plans">Skip to packages</Link>
               </Button>
             </div>
           </div>
         </div>
       </section>
 
+      {/* CONSULTATION */}
+      <section
+        id="consultation"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 scroll-mt-20 border-b border-border/60"
+      >
+        <div className="grid gap-10 sm:gap-12 lg:grid-cols-[1.1fr_1fr]">
+          <div className="space-y-4">
+            <Badge variant="outline" className="border-primary/40 text-primary">
+              Step 1
+            </Badge>
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              Let's talk goals.
+            </h2>
+            <p className="text-muted-foreground">
+              Grab a time on my calendar. We'll do a quick 15-minute call to talk
+              through your training history, where you want to go, and which
+              coaching package makes the most sense. No pressure, no credit card required.
+            </p>
+            <Separator />
+            <ul className="space-y-3 text-sm">
+              {[
+                "100% free, no obligation",
+                "Discuss your specific goals",
+                "Review training history & injuries",
+                "Get a recommendation on the best plan",
+              ].map((item) => (
+                <li key={item} className="flex gap-2 text-muted-foreground">
+                  <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="pt-4">
+              <ImagePlaceholder
+                label="Consultation call"
+                ratio="video"
+                src="/elek4.png"
+              />
+            </div>
+          </div>
+
+          <Card className="border-border/60 bg-card/60">
+            <CardHeader>
+              <CardTitle>Book your consult</CardTitle>
+              <CardDescription>
+                Takes about 30 seconds.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BookingForm
+                defaultPackage="consultation"
+                hidePackageSelection={true}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       {/* PLANS */}
       <section
         id="plans"
-        className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24"
       >
         <div className="mx-auto max-w-2xl text-center space-y-3">
           <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -150,37 +257,63 @@ export default function CoachingPage() {
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {plans.map(({ icon: Icon, ...plan }) => (
+        <div className="mt-10 grid gap-5 sm:mt-12 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {plans.map((plan) => (
             <Card
               key={plan.name}
               className={
                 plan.highlight
-                  ? "relative border-primary/60 bg-card shadow-lg shadow-primary/20"
-                  : "relative border-border/60 bg-card/60"
+                  ? "group relative flex h-full flex-col border-primary/60 bg-card shadow-lg shadow-primary/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/30"
+                  : "group relative flex h-full flex-col border-border/60 bg-card/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
               }
             >
+              {/* Top accent bar */}
+              <div
+                aria-hidden
+                className={
+                  plan.highlight
+                    ? "absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-primary to-transparent opacity-100"
+                    : "absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-primary/70 to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+                }
+              />
+              {/* Ambient glow on highlight */}
               {plan.highlight && (
-                <Badge className="absolute -top-3 left-6">Most popular</Badge>
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-linear-to-b from-primary/15 to-transparent"
+                />
               )}
-              <CardHeader>
-                <div className="mb-3 flex size-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-                  <Icon className="size-5" />
-                </div>
+              {plan.highlight && (
+                <Badge className="absolute right-4 top-4">Most popular</Badge>
+              )}
+              <CardHeader className="relative">
+                <span className="text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary/80">
+                  {plan.category}
+                </span>
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>
                 <CardDescription>{plan.description}</CardDescription>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">{plan.price}</span>
+                  <span
+                    className={
+                      plan.highlight
+                        ? "text-gradient-red text-5xl font-bold"
+                        : "text-4xl font-bold"
+                    }
+                  >
+                    {plan.price}
+                  </span>
                   <span className="text-sm text-muted-foreground">
                     {plan.cadence}
                   </span>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1">
                 <ul className="space-y-3 text-sm">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex gap-2">
-                      <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                    <li key={f} className="flex gap-2.5">
+                      <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                        <Check className="size-3" strokeWidth={3} />
+                      </span>
                       <span>{f}</span>
                     </li>
                   ))}
@@ -189,6 +322,7 @@ export default function CoachingPage() {
               <CardFooter>
                 <Button
                   asChild
+                  size="lg"
                   className="w-full"
                   variant={plan.highlight ? "default" : "outline"}
                 >
@@ -202,9 +336,13 @@ export default function CoachingPage() {
 
       {/* SCHEDULE STRIP */}
       <section className="bg-card/40 border-y border-border/60">
-        <div className="container mx-auto grid gap-10 px-4 sm:px-6 lg:px-8 py-16 lg:grid-cols-3">
+        <div className="container mx-auto grid gap-8 px-4 sm:px-6 sm:gap-10 lg:px-8 py-14 sm:py-16 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <ImagePlaceholder label="Studio interior" ratio="square" />
+            <ImagePlaceholder
+              label="Studio interior"
+              ratio="square"
+              src="/elek3.JPG"
+            />
           </div>
           <div className="lg:col-span-2 space-y-5">
             <h3 className="text-2xl font-bold tracking-tight md:text-3xl">
@@ -241,25 +379,24 @@ export default function CoachingPage() {
       {/* BOOKING */}
       <section
         id="book"
-        className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24 scroll-mt-20"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 scroll-mt-20"
       >
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
+        <div className="grid gap-10 sm:gap-12 lg:grid-cols-[1.1fr_1fr]">
           <div className="space-y-4">
             <Badge variant="outline" className="border-primary/40 text-primary">
               Book a session
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Request your session.
+              Ready to commit?
             </h2>
             <p className="text-muted-foreground">
-              Fill in the form and you&apos;ll receive a confirmation email
-              within 24 hours. New clients always start with a free intro call
-              so we can make sure it&apos;s the right fit.
+              If you know exactly what you need, you can skip the consultation
+              and request your first session right here.
             </p>
             <Separator />
             <ul className="space-y-3 text-sm">
               {[
-                "Free intro call to align on goals",
+                "Lock in your spot immediately",
                 "Movement screen on your first visit",
                 "Flexible reschedules with 24h notice",
                 "Programs that scale to your week",
@@ -275,6 +412,7 @@ export default function CoachingPage() {
               <ImagePlaceholder
                 label="Training session"
                 ratio="video"
+                src="/elek5.png"
               />
             </div>
           </div>
@@ -295,7 +433,7 @@ export default function CoachingPage() {
 
       {/* FAQ */}
       <section className="border-t border-border/60 bg-card/40">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="mx-auto max-w-3xl">
             <div className="text-center space-y-3">
               <Badge variant="secondary" className="bg-primary/10 text-primary">

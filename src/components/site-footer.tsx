@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flame, Camera, Film, Music2 } from "lucide-react";
+import { Flame, Camera } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
 import { Separator } from "@/components/ui/separator";
@@ -9,9 +9,9 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-border/60 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid gap-10 md:grid-cols-3">
-          <div className="space-y-3">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        <div className="grid gap-8 sm:gap-10 sm:grid-cols-2 md:grid-cols-3">
+          <div className="space-y-3 sm:col-span-2 md:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2 font-semibold">
               <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
                 <Flame className="size-4" />
@@ -30,16 +30,19 @@ export function SiteFooter() {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Explore
             </h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-1 text-sm text-muted-foreground">
               <li>
-                <Link href="/" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/"
+                  className="-mx-2 inline-flex min-h-9 items-center rounded-md px-2 hover:text-foreground transition-colors"
+                >
                   Home
                 </Link>
               </li>
               <li>
                 <Link
                   href="/coaching"
-                  className="hover:text-foreground transition-colors"
+                  className="-mx-2 inline-flex min-h-9 items-center rounded-md px-2 hover:text-foreground transition-colors"
                 >
                   Coaching & Booking
                 </Link>
@@ -47,7 +50,7 @@ export function SiteFooter() {
               <li>
                 <Link
                   href="/about"
-                  className="hover:text-foreground transition-colors"
+                  className="-mx-2 inline-flex min-h-9 items-center rounded-md px-2 hover:text-foreground transition-colors"
                 >
                   About & Contact
                 </Link>
@@ -59,10 +62,10 @@ export function SiteFooter() {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Contact
             </h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-1 text-sm text-muted-foreground">
               <li>
                 <a
-                  className="hover:text-foreground transition-colors"
+                  className="-mx-2 inline-flex min-h-9 items-center rounded-md px-2 break-all hover:text-foreground transition-colors"
                   href={`mailto:${siteConfig.contact.email}`}
                 >
                   {siteConfig.contact.email}
@@ -70,42 +73,24 @@ export function SiteFooter() {
               </li>
               <li>
                 <a
-                  className="hover:text-foreground transition-colors"
+                  className="-mx-2 inline-flex min-h-9 items-center rounded-md px-2 hover:text-foreground transition-colors"
                   href={`tel:${siteConfig.contact.phone.replace(/[^+\d]/g, "")}`}
                 >
                   {siteConfig.contact.phone}
                 </a>
               </li>
-              <li>{siteConfig.contact.location}</li>
-              <li>{siteConfig.contact.hours}</li>
+              <li className="px-0 py-1">{siteConfig.contact.location}</li>
+              <li className="px-0 py-1">{siteConfig.contact.hours}</li>
             </ul>
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-1 pt-1">
               <a
                 href={siteConfig.social.instagram}
                 aria-label="Instagram"
                 target="_blank"
                 rel="noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="inline-flex size-10 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-primary transition-colors"
               >
                 <Camera className="size-5" />
-              </a>
-              <a
-                href={siteConfig.social.youtube}
-                aria-label="YouTube"
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Film className="size-5" />
-              </a>
-              <a
-                href={siteConfig.social.tiktok}
-                aria-label="TikTok"
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Music2 className="size-5" />
               </a>
             </div>
           </div>
@@ -113,7 +98,7 @@ export function SiteFooter() {
 
         <Separator className="my-8" />
 
-        <div className="flex flex-col items-start justify-between gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center">
+        <div className="flex flex-col items-start justify-between gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center safe-pb">
           <p>© {year} {siteConfig.name}. All rights reserved.</p>
           <p>
             Built with Next.js & shadcn/ui — designed for hard work.

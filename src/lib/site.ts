@@ -10,15 +10,13 @@ export const siteConfig = {
   description:
     "Personal training, online coaching, and performance programming designed around how you actually live.",
   contact: {
-    email: "hello@elekstrength.com",
-    phone: "+1 (555) 123-4567",
-    location: "Downtown Studio · 123 Iron St., Suite 4",
+    email: "Jon@elekathletics.com",
+    phone: "+1 (818) 523-3085",
+    location: "Wnrs Circle · Burbank, CA",
     hours: "Mon – Sat · 6:00am – 8:00pm",
   },
   social: {
-    instagram: "https://instagram.com/",
-    youtube: "https://youtube.com/",
-    tiktok: "https://tiktok.com/",
+    instagram: "https://www.instagram.com/jonnyelek/",
   },
 } as const;
 

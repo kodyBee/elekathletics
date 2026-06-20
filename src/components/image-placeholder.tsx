@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -5,6 +6,10 @@ type ImagePlaceholderProps = {
   label?: string;
   ratio?: "square" | "video" | "portrait" | "wide" | "auto";
   className?: string;
+  src?: string;
+  alt?: string;
+  priority?: boolean;
+  objectPosition?: string;
 };
 
 const ratioClass: Record<NonNullable<ImagePlaceholderProps["ratio"]>, string> = {
@@ -15,15 +20,37 @@ const ratioClass: Record<NonNullable<ImagePlaceholderProps["ratio"]>, string> = 
   auto: "",
 };
 
-/**
- * Drop-in stand-in for a future <Image>. Swap the wrapping div for
- * <Image src=... alt=... fill className="object-cover" /> when assets arrive.
- */
 export function ImagePlaceholder({
   label = "Photo placeholder",
   ratio = "video",
   className,
+  src,
+  alt,
+  priority,
+  objectPosition = "center",
 }: ImagePlaceholderProps) {
+  if (src) {
+    return (
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-xl border border-border/60 bg-muted",
+          ratioClass[ratio],
+          className
+        )}
+      >
+        <Image
+          src={src}
+          alt={alt ?? label}
+          fill
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="object-cover"
+          style={objectPosition ? { objectPosition } : undefined}
+          priority={priority}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       role="img"

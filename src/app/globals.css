@@ -8,8 +8,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -122,11 +122,36 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01", "ss03", "cv02";
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Stop landscape rubber-banding from horizontal grids/decorations on mobile. */
+    overflow-x: clip;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+    /* Anton is a condensed display face — tight leading + near-zero tracking
+       reads best for sentence-case headlines; use `uppercase tracking-wider`
+       on labels/eyebrows where you want the spaced-out look. */
+    letter-spacing: -0.01em;
+    line-height: 1;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  /* Tabular numerals for stats / numeric callouts. */
+  .font-numeric,
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -158,5 +183,9 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+
+  .safe-pb {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
   }
 }

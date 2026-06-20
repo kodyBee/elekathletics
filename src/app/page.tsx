@@ -73,43 +73,37 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-radial-red" aria-hidden />
         <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
-        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-32">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div className="space-y-6">
-              <Badge
-                variant="outline"
-                className="border-primary/40 bg-primary/10 text-primary"
-              >
-                Now accepting new clients
-              </Badge>
-              <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-14 sm:py-20 md:py-28 lg:py-32">
+          <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-2">
+            <div className="space-y-5 sm:space-y-6">
+              <h1 className="text-[2.5rem] leading-[0.95] font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                 <span className="text-foreground">Train hard.</span>{" "}
                 <span className="text-gradient-red">Move better.</span>{" "}
                 <span className="text-foreground">Live stronger.</span>
               </h1>
-              <p className="max-w-xl text-lg text-muted-foreground">
+              <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
                 {siteConfig.description} Built around your body, your schedule,
                 and the goals you actually care about.
               </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <Button asChild size="lg" className="font-medium">
-                  <Link href="/coaching#book">
-                    Book a Session
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <Button asChild size="lg" className="w-full font-medium sm:w-auto">
+                  <Link href="/coaching#consultation">
+                    Book free consult
                     <ArrowRight className="ml-1 size-4" />
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline">
+                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
                   <Link href="/coaching">See coaching plans</Link>
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-x-8 gap-y-3 pt-6 text-sm text-muted-foreground">
+              <div className="flex flex-col gap-2 pt-4 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:pt-6">
                 {[
                   "Certified Strength & Conditioning Specialist",
                   "Nutrition coaching included",
                   "In-person & online programs",
                 ].map((item) => (
                   <span key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="size-4 text-primary" />
+                    <CheckCircle2 className="size-4 shrink-0 text-primary" />
                     {item}
                   </span>
                 ))}
@@ -121,9 +115,17 @@ export default function HomePage() {
                 label="Hero — coach in action"
                 ratio="portrait"
                 className="shadow-2xl shadow-primary/20"
+                src="/elek1.JPG"
+                objectPosition="center 20%"
+                priority
               />
               <div className="absolute -bottom-6 -left-6 hidden w-44 md:block">
-                <ImagePlaceholder label="Action shot" ratio="square" />
+                <ImagePlaceholder
+                  label="Action shot"
+                  ratio="square"
+                  src="/elek2.JPG"
+                  objectPosition="center 38%"
+                />
               </div>
             </div>
           </div>
@@ -132,17 +134,17 @@ export default function HomePage() {
 
       {/* STATS */}
       <section className="border-y border-border/60 bg-card/40">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <div className="grid grid-cols-3 gap-3 sm:gap-6">
             {stats.map((s) => (
               <div
                 key={s.label}
                 className="flex flex-col items-center text-center sm:items-start sm:text-left"
               >
-                <span className="text-4xl font-bold text-primary md:text-5xl">
+                <span className="font-heading text-3xl text-primary sm:text-5xl md:text-6xl tabular-nums">
                   {s.value}
                 </span>
-                <span className="mt-1 text-sm uppercase tracking-widest text-muted-foreground">
+                <span className="mt-2 text-[0.625rem] uppercase tracking-[0.18em] text-muted-foreground sm:text-xs sm:tracking-[0.2em]">
                   {s.label}
                 </span>
               </div>
@@ -152,7 +154,7 @@ export default function HomePage() {
       </section>
 
       {/* SERVICES */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-28">
         <div className="mx-auto max-w-2xl text-center space-y-3">
           <Badge variant="secondary" className="bg-primary/10 text-primary">
             What I do
@@ -167,7 +169,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 md:grid-cols-3">
           {services.map(({ icon: Icon, title, body }) => (
             <Card
               key={title}
@@ -193,10 +195,12 @@ export default function HomePage() {
 
       {/* FEATURE STRIP — image-friendly */}
       <section className="bg-card/40 border-y border-border/60">
-        <div className="container mx-auto grid items-center gap-10 px-4 sm:px-6 lg:px-8 py-20 lg:grid-cols-2">
+        <div className="container mx-auto grid items-center gap-8 px-4 sm:px-6 sm:gap-10 lg:px-8 py-16 sm:py-20 lg:grid-cols-2">
           <ImagePlaceholder
             label="Gym floor — coaching a deadlift"
             ratio="wide"
+            src="/elek4.PNG"
+            objectPosition="center 38%"
           />
           <div className="space-y-5">
             <Badge variant="outline" className="border-primary/40 text-primary">
@@ -219,9 +223,9 @@ export default function HomePage() {
               ))}
             </ul>
             <div className="pt-2">
-              <Button asChild>
-                <Link href="/coaching#book">
-                  Start with a free intro call
+              <Button asChild size="lg" className="w-full sm:w-auto">
+                <Link href="/coaching#consultation">
+                  Start with a free consult
                   <ArrowRight className="ml-1 size-4" />
                 </Link>
               </Button>
@@ -231,7 +235,7 @@ export default function HomePage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-28">
         <div className="mx-auto max-w-2xl text-center space-y-3">
           <Badge variant="secondary" className="bg-primary/10 text-primary">
             Client wins
@@ -241,7 +245,7 @@ export default function HomePage() {
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 md:grid-cols-3">
           {testimonials.map((t) => (
             <Card
               key={t.name}
@@ -270,7 +274,7 @@ export default function HomePage() {
       {/* CTA */}
       <section className="relative overflow-hidden border-t border-border/60 bg-gradient-to-b from-background to-primary/10">
         <div className="absolute inset-0 bg-radial-red opacity-60" aria-hidden />
-        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-20 md:py-24 text-center">
+        <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 text-center">
           <h2 className="mx-auto max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
             Ready to put in the work?
           </h2>
@@ -278,14 +282,14 @@ export default function HomePage() {
             Spots are limited so I can give every client the attention they
             deserve. Lock in your session and let&apos;s build something.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg">
-              <Link href="/coaching#book">
-                Book a Session
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+            <Button asChild size="lg" className="w-full sm:w-auto">
+              <Link href="/coaching#consultation">
+                Book free consult
                 <ArrowRight className="ml-1 size-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
               <Link href="/about">Get in touch</Link>
             </Button>
           </div>
