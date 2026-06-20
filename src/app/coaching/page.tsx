@@ -221,7 +221,7 @@ export default function CoachingPage() {
               <ImagePlaceholder
                 label="Consultation call"
                 ratio="video"
-                src="/elek4.png"
+                src="/elek4.PNG"
               />
             </div>
           </div>
