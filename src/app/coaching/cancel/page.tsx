@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function BookingCancelPage() {
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-radial-red" aria-hidden />
+      <div className="absolute inset-0 bg-radial-primary" aria-hidden />
       <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-20 sm:py-28 md:py-36">
         <div className="mx-auto max-w-xl text-center space-y-6">
           <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-destructive/10 text-destructive animate-in fade-in zoom-in duration-500">
@@ -34,7 +34,7 @@ export default function BookingCancelPage() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center pt-4">
             <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/coaching#book">
+              <Link href="/coaching/book">
                 <ArrowLeft className="mr-2 size-4" />
                 Try again
               </Link>

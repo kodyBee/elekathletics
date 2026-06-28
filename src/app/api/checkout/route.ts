@@ -62,7 +62,6 @@ export async function POST(request: NextRequest) {
   // Free packages bypass Stripe entirely
   if (isFreeConsultation) {
     await confirmBooking(booking.id, "free_consultation");
-    sendBookingWebhook(booking).catch(() => {});
     
     return Response.json(
       {

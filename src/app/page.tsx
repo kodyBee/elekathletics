@@ -71,14 +71,14 @@ export default function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-radial-red" aria-hidden />
+        <div className="absolute inset-0 bg-radial-primary" aria-hidden />
         <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
         <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-14 sm:py-20 md:py-28 lg:py-32">
           <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-2">
             <div className="space-y-5 sm:space-y-6">
               <h1 className="text-[2.5rem] leading-[0.95] font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                 <span className="text-foreground">Train hard.</span>{" "}
-                <span className="text-gradient-red">Move better.</span>{" "}
+                <span className="text-gradient-primary">Move better.</span>{" "}
                 <span className="text-foreground">Live stronger.</span>
               </h1>
               <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
@@ -87,7 +87,7 @@ export default function HomePage() {
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button asChild size="lg" className="w-full font-medium sm:w-auto">
-                  <Link href="/coaching#consultation">
+                  <Link href="/coaching/custom">
                     Book free consult
                     <ArrowRight className="ml-1 size-4" />
                   </Link>
@@ -224,7 +224,7 @@ export default function HomePage() {
             </ul>
             <div className="pt-2">
               <Button asChild size="lg" className="w-full sm:w-auto">
-                <Link href="/coaching#consultation">
+                <Link href="/coaching/custom">
                   Start with a free consult
                   <ArrowRight className="ml-1 size-4" />
                 </Link>
@@ -273,7 +273,7 @@ export default function HomePage() {
 
       {/* CTA */}
       <section className="relative overflow-hidden border-t border-border/60 bg-gradient-to-b from-background to-primary/10">
-        <div className="absolute inset-0 bg-radial-red opacity-60" aria-hidden />
+        <div className="absolute inset-0 bg-radial-primary opacity-60" aria-hidden />
         <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 text-center">
           <h2 className="mx-auto max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
             Ready to put in the work?
@@ -284,7 +284,7 @@ export default function HomePage() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
             <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/coaching#consultation">
+              <Link href="/coaching/custom">
                 Book free consult
                 <ArrowRight className="ml-1 size-4" />
               </Link>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 224 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ea-metal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0f0f0" />
+      <stop offset="25%" stop-color="#a0a0a0" />
+      <stop offset="50%" stop-color="#ffffff" />
+      <stop offset="75%" stop-color="#707070" />
+      <stop offset="100%" stop-color="#d0d0d0" />
+    </linearGradient>
+    <filter id="ea-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#ea-shadow)">
+    <!-- Letter E -->
+    <path d="M 20 10 L 95 10 L 95 40 L 55 40 L 55 65 L 83.75 65 L 73.25 95 L 55 95 L 55 120 L 89.5 120 L 79 150 L 20 150 Z" fill="url(#ea-metal)" />
+    
+    <!-- Letter A -->
+    <path d="M 115 10 L 155 10 L 204 150 L 174 150 L 170.5 140 L 111.5 140 L 77 190 L 105 110 L 80 110 Z M 115 110 L 137.5 45.7 L 160 110 Z" fill="url(#ea-metal)" fill-rule="evenodd" />
+  </g>
+</svg>

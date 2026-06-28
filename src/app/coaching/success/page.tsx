@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function BookingSuccessPage() {
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-radial-red" aria-hidden />
+      <div className="absolute inset-0 bg-radial-primary" aria-hidden />
       <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-20 sm:py-28 md:py-36">
         <div className="mx-auto max-w-xl text-center space-y-6">
           <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary animate-in fade-in zoom-in duration-500">
@@ -25,7 +25,7 @@ export default function BookingSuccessPage() {
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             You&apos;re{" "}
-            <span className="text-gradient-red">booked.</span>
+            <span className="text-gradient-primary">booked.</span>
           </h1>
 
           <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto">

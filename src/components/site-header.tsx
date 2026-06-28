@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, Flame } from "lucide-react";
 
@@ -31,9 +32,14 @@ function BrandMark({ className }: { className?: string }) {
       aria-label={`${siteConfig.name} home`}
       className={cn("flex items-center gap-2 font-semibold", className)}
     >
-      <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm shadow-primary/40">
-        <Flame className="size-4" />
-      </span>
+      <div className="relative size-14 overflow-visible">
+        <Image 
+          src="/ea-logo.svg" 
+          alt="Elek Athletics Logo" 
+          fill 
+          className="object-contain"
+        />
+      </div>
       <span className="text-base tracking-wide uppercase">
         {siteConfig.shortName}
         <span className="text-primary">.</span>
@@ -76,14 +82,14 @@ export function SiteHeader() {
 
         <div className="hidden md:flex items-center gap-2">
           <Button asChild size="sm" className="font-medium">
-            <Link href="/coaching#book">Book a Session</Link>
+            <Link href="/coaching/book">Book a Session</Link>
           </Button>
         </div>
 
         {/* Mobile actions */}
         <div className="flex items-center gap-1.5 md:hidden">
           <Button asChild size="sm" className="font-medium">
-            <Link href="/coaching#book">Book</Link>
+            <Link href="/coaching/book">Book</Link>
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -125,7 +131,7 @@ export function SiteHeader() {
               <div className="mt-auto border-t border-border/60 p-4 safe-pb">
                 <SheetClose asChild>
                   <Button asChild size="lg" className="w-full">
-                    <Link href="/coaching#book">Book a Session</Link>
+                    <Link href="/coaching/book">Book a Session</Link>
                   </Button>
                 </SheetClose>
               </div>

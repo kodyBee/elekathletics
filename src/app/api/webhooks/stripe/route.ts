@@ -56,12 +56,6 @@ export async function POST(request: NextRequest) {
 
       if (confirmed) {
         console.log(`[Stripe Webhook] Booking ${bookingId} confirmed.`);
-
-        // Fire Zapier webhook now that payment is confirmed
-        const booking = await getBookingById(bookingId);
-        if (booking) {
-          sendBookingWebhook(booking).catch(() => {});
-        }
       } else {
         console.warn(
           `[Stripe Webhook] Could not find booking ${bookingId} to confirm.`

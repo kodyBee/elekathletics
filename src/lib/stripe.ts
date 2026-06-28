@@ -35,28 +35,8 @@ export const PACKAGE_PRICES: Record<
   string,
   { priceId: string; mode: "payment" | "subscription" }
 > = {
-  "online-premium": {
-    priceId: process.env.STRIPE_PRICE_ONLINE_PREMIUM ?? "",
+  "everything-included": {
+    priceId: process.env.STRIPE_PRICE_EVERYTHING_INCLUDED ?? "",
     mode: "subscription",
-  },
-  "in-person-wnrs": {
-    priceId: process.env.STRIPE_PRICE_IN_PERSON_WNRS ?? "",
-    mode: "payment",
-  },
-  "in-person-outside": {
-    priceId: process.env.STRIPE_PRICE_IN_PERSON_OUTSIDE ?? "",
-    mode: "payment",
-  },
-  nutrition: {
-    priceId: process.env.STRIPE_PRICE_NUTRITION ?? "",
-    mode: "payment",
-  },
-  "posing-in-person": {
-    priceId: process.env.STRIPE_PRICE_POSING_IN_PERSON ?? "",
-    mode: "payment",
-  },
-  "posing-online": {
-    priceId: process.env.STRIPE_PRICE_POSING_ONLINE ?? "",
-    mode: "payment",
   },
 };

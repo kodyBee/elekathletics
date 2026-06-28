@@ -25,12 +25,7 @@ import {
 } from "@/components/ui/select";
 
 const PACKAGES = [
-  { value: "online-premium", label: "Online Training Premium — $350/mo" },
-  { value: "in-person-wnrs", label: "In-Person @ Wnrs Circle — $90/hr" },
-  { value: "in-person-outside", label: "In-Person Outside Wnrs Circle — $135/hr" },
-  { value: "nutrition", label: "Nutrition Plan — $175 one-time" },
-  { value: "posing-in-person", label: "In-Person Posing — $90 / 45 min" },
-  { value: "posing-online", label: "Online Posing — $70 / 45 min" },
+  { value: "everything-included", label: "Everything Included Plan — $350/mo" },
 ];
 
 // All possible time slots — the form will filter by day-of-week availability

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Flame, Camera } from "lucide-react";
+import Image from "next/image";
+import { Camera } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
 import { Separator } from "@/components/ui/separator";
@@ -13,9 +14,14 @@ export function SiteFooter() {
         <div className="grid gap-8 sm:gap-10 sm:grid-cols-2 md:grid-cols-3">
           <div className="space-y-3 sm:col-span-2 md:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2 font-semibold">
-              <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                <Flame className="size-4" />
-              </span>
+              <div className="relative size-14 overflow-visible">
+                <Image 
+                  src="/ea-logo.svg" 
+                  alt="Elek Athletics Logo" 
+                  fill 
+                  className="object-contain"
+                />
+              </div>
               <span className="text-base tracking-wide uppercase">
                 {siteConfig.shortName}
                 <span className="text-primary">.</span>

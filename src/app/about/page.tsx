@@ -73,7 +73,7 @@ export default function AboutPage() {
     <>
       {/* HERO / BIO */}
       <section className="relative overflow-hidden border-b border-border/60">
-        <div className="absolute inset-0 bg-radial-red" aria-hidden />
+        <div className="absolute inset-0 bg-radial-primary" aria-hidden />
         <div className="container mx-auto relative px-4 sm:px-6 lg:px-8 py-14 sm:py-20 md:py-24">
           <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-2">
             <div className="space-y-5">
@@ -82,17 +82,25 @@ export default function AboutPage() {
               </Badge>
               <h1 className="text-[2.5rem] leading-[0.95] font-bold tracking-tight sm:text-5xl md:text-6xl">
                 Hey, I&apos;m{" "}
-                <span className="text-gradient-red">your coach.</span>
+                <span className="text-gradient-primary">Jonny Elek.</span>
               </h1>
-              <p className="text-base text-muted-foreground sm:text-lg">
-                For over a decade I&apos;ve been helping busy humans, weekend
-                warriors, and competitive athletes build strength, lose fat,
-                and move pain-free. No gimmicks — just honest programming,
-                tight coaching, and the right amount of pressure.
-              </p>
+              <div className="space-y-4 text-base text-muted-foreground sm:text-lg">
+                <p>
+                  I&apos;m a personal trainer, online coach, and competitive bodybuilder based in the Los Angeles area and the founder of Elek Athletics.
+                </p>
+                <p>
+                  After 4 years in the Marine Corps, discipline isn&apos;t just something I talk about, it&apos;s how I live. That mindset is the foundation of everything I do as a coach. I train out of Winner&apos;s Circle in Burbank, and I work with clients both in person and online to help them build real, lasting physiques.
+                </p>
+                <p>
+                  As a bodybuilder myself, I know what it takes to transform your body: the consistency, the attention to nutrition, and the commitment to the process. I bring all of that into my coaching, without the pressure of stage prep. My focus is on helping everyday people build a body they&apos;re proud of and develop the discipline to maintain it for life.
+                </p>
+                <p>
+                  If you&apos;re ready to stop going through the motions and start training with real intention, you&apos;re in the right place. Let&apos;s get to work.
+                </p>
+              </div>
               <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button asChild size="lg" className="w-full sm:w-auto">
-                  <Link href="/coaching#book">
+                  <Link href="/coaching/book">
                     Book a session
                     <ArrowRight className="ml-1 size-4" />
                   </Link>
