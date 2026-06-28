@@ -94,7 +94,7 @@ export default function CoachingPage() {
                 <Sparkles className="size-6" />
               </div>
               <span className="text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary/80">
-                Premium Coaching
+                Premium Online Coaching
               </span>
               <CardTitle className="text-2xl">Everything Included Plan</CardTitle>
               <CardDescription>

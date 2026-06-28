@@ -115,7 +115,7 @@ export default function HomePage() {
                 label="Hero — coach in action"
                 ratio="portrait"
                 className="shadow-2xl shadow-primary/20"
-                src="/elek1.JPG"
+                src="/MPFin01852 (1).JPG"
                 objectPosition="center 20%"
                 priority
               />
