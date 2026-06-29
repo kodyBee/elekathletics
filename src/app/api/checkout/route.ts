@@ -1,7 +1,7 @@
 import { type NextRequest } from "next/server";
 import { getStripe, PACKAGE_PRICES } from "@/lib/stripe";
 import { addBooking, confirmBooking, type BookingInput } from "@/lib/bookings";
-import { sendBookingWebhook } from "@/lib/zapier";
+import { sendConsultationWebhook } from "@/lib/zapier";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +62,10 @@ export async function POST(request: NextRequest) {
   // Free packages bypass Stripe entirely
   if (isFreeConsultation) {
     await confirmBooking(booking.id, "free_consultation");
-    
+
+    // Fire-and-forget — calendar-only Zap (no Trainerize)
+    sendConsultationWebhook(booking).catch(() => {});
+
     return Response.json(
       {
         successUrl: `${baseUrl}/coaching/success?booking_id=${booking.id}`,

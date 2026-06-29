@@ -1,13 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Link2, UserPlus, Copy, Loader2, Check } from "lucide-react";
+import { Link2, UserPlus, Copy, Loader2, Check, Inbox, Mail, Trash2, RotateCcw } from "lucide-react";
+
+interface Inquiry {
+  id: string;
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+  topic: "general" | "in-person" | "custom";
+  status: "new" | "resolved";
+  createdAt: string;
+}
+
+const TOPIC_LABEL: Record<Inquiry["topic"], string> = {
+  general: "General",
+  "in-person": "In-Person",
+  custom: "Custom Plan",
+};
 
 export default function CoachDashboard() {
   const [clientName, setClientName] = useState("");
@@ -22,6 +40,75 @@ export default function CoachDashboard() {
   const [tEmail, setTEmail] = useState("");
   const [tPhone, setTPhone] = useState("");
   const [loadingTrainerize, setLoadingTrainerize] = useState(false);
+
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [loadingInquiries, setLoadingInquiries] = useState(true);
+  const [inquiryFilter, setInquiryFilter] = useState<"new" | "all">("new");
+  const [busyInquiryId, setBusyInquiryId] = useState<string | null>(null);
+
+  const loadInquiries = useCallback(async () => {
+    setLoadingInquiries(true);
+    try {
+      const res = await fetch("/api/inquiries", { cache: "no-store" });
+      const data = await res.json();
+      if (res.ok) {
+        setInquiries(data.inquiries ?? []);
+      } else {
+        toast.error(data.error || "Could not load inquiries");
+      }
+    } catch {
+      toast.error("Network error loading inquiries");
+    } finally {
+      setLoadingInquiries(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadInquiries();
+  }, [loadInquiries]);
+
+  const updateInquiry = async (id: string, status: Inquiry["status"]) => {
+    setBusyInquiryId(id);
+    try {
+      const res = await fetch(`/api/inquiries/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setInquiries((prev) =>
+          prev.map((i) => (i.id === id ? data.inquiry : i))
+        );
+        toast.success(status === "resolved" ? "Marked as resolved" : "Reopened");
+      } else {
+        toast.error(data.error || "Could not update");
+      }
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setBusyInquiryId(null);
+    }
+  };
+
+  const deleteInquiry = async (id: string) => {
+    if (!confirm("Delete this inquiry? This can't be undone.")) return;
+    setBusyInquiryId(id);
+    try {
+      const res = await fetch(`/api/inquiries/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setInquiries((prev) => prev.filter((i) => i.id !== id));
+        toast.success("Inquiry deleted");
+      } else {
+        toast.error(data.error || "Could not delete");
+      }
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setBusyInquiryId(null);
+    }
+  };
 
   const handleCreateLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,6 +268,145 @@ export default function CoachDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Inquiries */}
+      <Card className="border-border/60 shadow-sm bg-card/60">
+        <CardHeader>
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <div className="flex items-center gap-2">
+                <Inbox className="text-primary size-5" />
+                <CardTitle>Inquiries</CardTitle>
+                {inquiries.filter((i) => i.status === "new").length > 0 && (
+                  <Badge variant="secondary" className="bg-primary/15 text-primary">
+                    {inquiries.filter((i) => i.status === "new").length} new
+                  </Badge>
+                )}
+              </div>
+              <CardDescription className="mt-1">
+                Contact-form messages from the site. Reply by email, then mark resolved.
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Select value={inquiryFilter} onValueChange={(v) => setInquiryFilter(v as "new" | "all")}>
+                <SelectTrigger className="w-35">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">New only</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant="ghost" size="icon" onClick={loadInquiries} title="Refresh" disabled={loadingInquiries}>
+                {loadingInquiries ? <Loader2 className="size-4 animate-spin" /> : <RotateCcw className="size-4" />}
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const visible = inquiries.filter((i) =>
+              inquiryFilter === "all" ? true : i.status === "new"
+            );
+            if (loadingInquiries && inquiries.length === 0) {
+              return (
+                <div className="flex items-center justify-center py-10 text-muted-foreground">
+                  <Loader2 className="size-5 animate-spin" />
+                </div>
+              );
+            }
+            if (visible.length === 0) {
+              return (
+                <div className="py-10 text-center text-sm text-muted-foreground">
+                  {inquiryFilter === "new"
+                    ? "No new inquiries. Nice."
+                    : "No inquiries yet."}
+                </div>
+              );
+            }
+            return (
+              <ul className="divide-y divide-border/60">
+                {visible.map((inq) => {
+                  const isResolved = inq.status === "resolved";
+                  const subject =
+                    inq.subject || `${TOPIC_LABEL[inq.topic]} inquiry`;
+                  const replyHref = `mailto:${inq.email}?subject=${encodeURIComponent(`Re: ${subject}`)}`;
+                  return (
+                    <li key={inq.id} className="py-4 first:pt-0 last:pb-0">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-medium">{inq.name}</span>
+                            <span className="text-sm text-muted-foreground">&lt;{inq.email}&gt;</span>
+                            <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
+                              {TOPIC_LABEL[inq.topic]}
+                            </Badge>
+                            {isResolved && (
+                              <Badge variant="secondary" className="text-[10px] uppercase tracking-wider">
+                                Resolved
+                              </Badge>
+                            )}
+                          </div>
+                          {inq.subject && (
+                            <p className="mt-1 text-sm font-medium">{inq.subject}</p>
+                          )}
+                          <p className="mt-1 text-sm whitespace-pre-wrap text-muted-foreground">
+                            {inq.message}
+                          </p>
+                          <p className="mt-2 text-xs text-muted-foreground">
+                            {new Date(inq.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                          <Button asChild size="sm" variant="outline">
+                            <a href={replyHref}>
+                              <Mail className="mr-1.5 size-3.5" />
+                              Reply
+                            </a>
+                          </Button>
+                          {isResolved ? (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateInquiry(inq.id, "new")}
+                              disabled={busyInquiryId === inq.id}
+                            >
+                              Reopen
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              onClick={() => updateInquiry(inq.id, "resolved")}
+                              disabled={busyInquiryId === inq.id}
+                            >
+                              {busyInquiryId === inq.id ? (
+                                <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                              ) : (
+                                <Check className="mr-1.5 size-3.5" />
+                              )}
+                              Mark resolved
+                            </Button>
+                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => deleteInquiry(inq.id)}
+                            disabled={busyInquiryId === inq.id}
+                            title="Delete"
+                            className="text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            );
+          })()}
+        </CardContent>
+      </Card>
     </div>
   );
 }

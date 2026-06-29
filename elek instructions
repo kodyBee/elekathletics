@@ -1,0 +1,6 @@
+Keep his existing Zap (the one whose URL is already in ZAPIER_WEBHOOK_URL) — that's now the Trainerize one, and it'll only fire after Stripe payment succeeds.
+Create a second Zap:
+Trigger: Webhooks by Zapier → Catch Hook (gets a new URL)
+Action: Google Calendar → Create Detailed Event (map booking.name, booking.email, booking.date, booking.time, booking.goals)
+Paste that new URL into .env.local as ZAPIER_CONSULTATION_WEBHOOK_URL= and restart npm run dev.
+If he leaves ZAPIER_CONSULTATION_WEBHOOK_URL blank, consultations still work — they just don't notify anyone. So nothing breaks while he sets the Zap up.

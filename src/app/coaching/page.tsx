@@ -6,6 +6,7 @@ import {
   Calendar as CalendarIcon,
   Sparkles,
   MessageSquare,
+  MapPin,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -73,9 +74,9 @@ export default function CoachingPage() {
         </div>
       </section>
 
-      {/* TWO CARDS */}
+      {/* PLAN CARDS */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24">
-        <div className="mx-auto max-w-4xl grid gap-6 sm:grid-cols-2">
+        <div className="mx-auto max-w-6xl grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {/* Everything Included */}
           <Card className="group relative flex h-full flex-col border-primary/60 bg-card shadow-lg shadow-primary/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/30">
             {/* Top accent bar */}
@@ -182,6 +183,56 @@ export default function CoachingPage() {
               <Button asChild size="lg" variant="outline" className="w-full">
                 <Link href="/coaching/custom">
                   Contact for a custom plan
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* In Person */}
+          <Card className="group relative flex h-full flex-col border-border/60 bg-card/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+            {/* Top accent bar */}
+            <div
+              aria-hidden
+              className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-primary/70 to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+            />
+            <CardHeader className="relative">
+              <div className="mb-3 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <MapPin className="size-6" />
+              </div>
+              <span className="text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary/80">
+                Hands-On
+              </span>
+              <CardTitle className="text-2xl">In-Person Training</CardTitle>
+              <CardDescription>
+                Train with Elek face-to-face. Sessions are arranged directly
+                so we can match your schedule, location, and goals.
+              </CardDescription>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-4xl font-bold">By inquiry</span>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <ul className="space-y-3 text-sm">
+                {[
+                  "1-on-1 coaching, in the room with you",
+                  "Real-time form coaching and cueing",
+                  "Flexible scheduling around your week",
+                  "Reach out to arrange details and pricing",
+                ].map((f) => (
+                  <li key={f} className="flex gap-2.5">
+                    <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                      <Check className="size-3" strokeWidth={3} />
+                    </span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter>
+              <Button asChild size="lg" variant="outline" className="w-full">
+                <Link href="/coaching/in-person">
+                  Contact me to arrange
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>

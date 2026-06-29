@@ -122,40 +122,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CREDENTIALS */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="grid gap-8 sm:gap-10 lg:grid-cols-3">
-          <div className="space-y-3">
-            <Badge variant="secondary" className="bg-primary/10 text-primary">
-              Credentials
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Trained where it counts.
-            </h2>
-            <p className="text-muted-foreground">
-              Continued education is a big part of the job. Here&apos;s the
-              short list of the credentials behind every program.
-            </p>
-          </div>
-          <div className="lg:col-span-2 grid gap-4 sm:grid-cols-2">
-            {credentials.map(({ icon: Icon, title, detail }) => (
-              <Card
-                key={title}
-                className="border-border/60 bg-card/60 transition-colors hover:border-primary/40"
-              >
-                <CardHeader>
-                  <div className="mb-2 flex size-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <Icon className="size-5" />
-                  </div>
-                  <CardTitle className="text-lg">{title}</CardTitle>
-                  <CardDescription>{detail}</CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* VALUES + IMAGE STRIP */}
       <section className="bg-card/40 border-y border-border/60">
         <div className="container mx-auto grid gap-10 px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:grid-cols-2">

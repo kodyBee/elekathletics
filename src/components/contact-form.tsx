@@ -9,15 +9,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-export function ContactForm() {
+type Topic = "general" | "in-person" | "custom";
+
+interface ContactFormProps {
+  topic?: Topic;
+  defaultSubject?: string;
+  hideSubject?: boolean;
+  messagePlaceholder?: string;
+}
+
+export function ContactForm({
+  topic = "general",
+  defaultSubject,
+  hideSubject = false,
+  messagePlaceholder = "Tell me a bit about what you're looking for...",
+}: ContactFormProps = {}) {
   const [submitting, setSubmitting] = React.useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
     const email = String(data.get("email") ?? "").trim();
+    const subject = String(data.get("subject") ?? "").trim();
     const message = String(data.get("message") ?? "").trim();
 
     if (!name || !email || !message) {
@@ -26,13 +41,32 @@ export function ContactForm() {
     }
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      const res = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          subject: subject || defaultSubject,
+          message,
+          topic,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        toast.error(json.error ?? "Could not send message.");
+        return;
+      }
       toast.success("Message sent!", {
-        description: "I'll get back to you within 24 hours.",
+        description: "Elek will get back to you within 24 hours.",
       });
       form.reset();
-    }, 800);
+    } catch {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -53,21 +87,24 @@ export function ContactForm() {
           />
         </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="contact-subject">Subject</Label>
-        <Input
-          id="contact-subject"
-          name="subject"
-          placeholder="What's this about?"
-        />
-      </div>
+      {!hideSubject && (
+        <div className="space-y-2">
+          <Label htmlFor="contact-subject">Subject</Label>
+          <Input
+            id="contact-subject"
+            name="subject"
+            placeholder="What's this about?"
+            defaultValue={defaultSubject}
+          />
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="contact-message">Message</Label>
         <Textarea
           id="contact-message"
           name="message"
           rows={5}
-          placeholder="Tell me a bit about what you're looking for..."
+          placeholder={messagePlaceholder}
           required
         />
       </div>

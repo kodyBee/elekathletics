@@ -1,0 +1,12 @@
+[
+  {
+    "id": "667eca6a-4d53-4e9f-a12e-1b9c2b60557a",
+    "name": "test",
+    "email": "tete@gmail.com",
+    "subject": "In-Person Training Inquiry",
+    "message": "test",
+    "topic": "in-person",
+    "status": "resolved",
+    "createdAt": "2026-06-29T21:30:58.609Z"
+  }
+]
