@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Link2, Copy, Loader2, Check, Inbox, Mail, Trash2, RotateCcw } from "lucide-react";
+import { Link2, Copy, Loader2, Check, Inbox, Mail, Trash2, RotateCcw, LogOut } from "lucide-react";
 
 interface Inquiry {
   id: string;
@@ -28,6 +29,7 @@ const TOPIC_LABEL: Record<Inquiry["topic"], string> = {
 };
 
 export default function CoachDashboard() {
+  const router = useRouter();
   const [clientName, setClientName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -140,11 +142,27 @@ export default function CoachDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignore network errors; cookie clearing still redirects
+    }
+    router.push("/coach/login");
+    router.refresh();
+  };
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Coach Dashboard</h1>
-        <p className="text-muted-foreground mt-2">Manage custom subscriptions and client onboarding.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Coach Dashboard</h1>
+          <p className="text-muted-foreground mt-2">Manage custom subscriptions and client onboarding.</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0">
+          <LogOut className="size-4" />
+          Logout
+        </Button>
       </div>
 
       <div className="grid gap-8">

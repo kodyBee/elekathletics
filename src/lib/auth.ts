@@ -1,7 +1,5 @@
-import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import path from "node:path";
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { Redis } from "@upstash/redis";
 
 export interface AuthData {
   passwordHash: string;
@@ -10,9 +8,24 @@ export interface AuthData {
   updatedAt: string;
 }
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "auth.json");
+const AUTH_KEY = "coach:auth";
 const DEFAULT_PASSWORD = "changeme123";
+
+let client: Redis | null = null;
+
+function getRedis(): Redis {
+  if (client) return client;
+  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+  if (!url || !token) {
+    throw new Error(
+      "Missing Upstash Redis env vars (UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN)."
+    );
+  }
+  client = new Redis({ url, token });
+  return client;
+}
 
 function hashPassword(password: string, salt: string): string {
   return scryptSync(password, salt, 64).toString("hex");
@@ -28,21 +41,17 @@ function buildAuthData(password: string, mustChangePassword: boolean): AuthData 
   };
 }
 
-async function ensureAuthFile(): Promise<AuthData> {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true });
-  }
-  if (!existsSync(DATA_FILE)) {
-    const data = buildAuthData(DEFAULT_PASSWORD, true);
-    await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-    return data;
-  }
-  const raw = await readFile(DATA_FILE, "utf-8");
-  return JSON.parse(raw) as AuthData;
+async function getAuthData(): Promise<AuthData> {
+  const redis = getRedis();
+  const existing = await redis.get<AuthData>(AUTH_KEY);
+  if (existing) return existing;
+  const seeded = buildAuthData(DEFAULT_PASSWORD, true);
+  await redis.set(AUTH_KEY, seeded);
+  return seeded;
 }
 
 export async function verifyPassword(password: string): Promise<boolean> {
-  const data = await ensureAuthFile();
+  const data = await getAuthData();
   const candidate = Buffer.from(hashPassword(password, data.salt), "hex");
   const stored = Buffer.from(data.passwordHash, "hex");
   if (candidate.length !== stored.length) return false;
@@ -50,12 +59,12 @@ export async function verifyPassword(password: string): Promise<boolean> {
 }
 
 export async function mustChangePassword(): Promise<boolean> {
-  const data = await ensureAuthFile();
+  const data = await getAuthData();
   return data.mustChangePassword;
 }
 
 export async function changePassword(newPassword: string): Promise<void> {
-  await ensureAuthFile();
+  const redis = getRedis();
   const data = buildAuthData(newPassword, false);
-  await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  await redis.set(AUTH_KEY, data);
 }
