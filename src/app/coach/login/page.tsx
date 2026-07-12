@@ -24,8 +24,9 @@ export default function CoachLogin() {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
+        const data = await res.json();
         toast.success("Logged in successfully");
-        router.push("/coach");
+        router.push(data.mustChangePassword ? "/coach/change-password" : "/coach");
         router.refresh();
       } else {
         toast.error("Invalid password");

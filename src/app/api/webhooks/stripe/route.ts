@@ -2,7 +2,7 @@ import { type NextRequest } from "next/server";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { confirmBooking, getBookingById } from "@/lib/bookings";
-import { sendBookingWebhook } from "@/lib/zapier";
+import { sendPaidBookingNotification } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +10,8 @@ export const dynamic = "force-dynamic";
  * POST /api/webhooks/stripe
  *
  * Handles Stripe webhook events. The primary event we care about is
- * `checkout.session.completed` — this confirms the booking and fires
- * the Zapier webhook so Trainerize gets notified.
+ * `checkout.session.completed` — this confirms the booking and emails
+ * Elek so he can add the new client to Trainerize.
  *
  * IMPORTANT: Read the raw body as text for signature verification.
  * Do NOT use request.json() — it breaks the signature check.
@@ -57,10 +57,10 @@ export async function POST(request: NextRequest) {
       if (confirmed) {
         console.log(`[Stripe Webhook] Booking ${bookingId} confirmed.`);
 
-        // Fire Zapier (Trainerize) for paid bookings only
+        // Email Elek so he can add the client to Trainerize manually
         const booking = await getBookingById(bookingId);
         if (booking) {
-          sendBookingWebhook(booking).catch(() => {});
+          sendPaidBookingNotification(booking).catch(() => {});
         }
       } else {
         console.warn(

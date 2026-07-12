@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Link2, UserPlus, Copy, Loader2, Check, Inbox, Mail, Trash2, RotateCcw } from "lucide-react";
+import { Link2, Copy, Loader2, Check, Inbox, Mail, Trash2, RotateCcw } from "lucide-react";
 
 interface Inquiry {
   id: string;
@@ -35,11 +35,6 @@ export default function CoachDashboard() {
   const [paymentLink, setPaymentLink] = useState("");
   const [loadingLink, setLoadingLink] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const [tClientName, setTClientName] = useState("");
-  const [tEmail, setTEmail] = useState("");
-  const [tPhone, setTPhone] = useState("");
-  const [loadingTrainerize, setLoadingTrainerize] = useState(false);
 
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(true);
@@ -145,33 +140,6 @@ export default function CoachDashboard() {
     }
   };
 
-  const handleAddTrainerize = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoadingTrainerize(true);
-    
-    try {
-      const res = await fetch("/api/coach/add-trainerize-client", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: tClientName, email: tEmail, phone: tPhone }),
-      });
-      
-      const data = await res.json();
-      
-      if (res.ok) {
-        toast.success("Client added to Trainerize!");
-        setTClientName("");
-        setTEmail("");
-        setTPhone("");
-      } else {
-        toast.error(data.error || "Failed to add client");
-      }
-    } catch {
-      toast.error("Network error");
-    }
-    setLoadingTrainerize(false);
-  };
-
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl space-y-8">
       <div>
@@ -179,7 +147,7 @@ export default function CoachDashboard() {
         <p className="text-muted-foreground mt-2">Manage custom subscriptions and client onboarding.</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid gap-8">
         {/* Custom Subscription Generator */}
         <Card className="border-primary/20 shadow-sm bg-card/60">
           <CardHeader>
@@ -234,37 +202,6 @@ export default function CoachDashboard() {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Add to Trainerize */}
-        <Card className="border-border/60 shadow-sm bg-card/60">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <UserPlus className="text-primary size-5" />
-              <CardTitle>Add to Trainerize</CardTitle>
-            </div>
-            <CardDescription>Manually trigger Zapier to create a Trainerize client.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAddTrainerize} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="tClientName">Client Name</Label>
-                <Input id="tClientName" value={tClientName} onChange={e => setTClientName(e.target.value)} required placeholder="e.g. John Doe" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="tEmail">Client Email</Label>
-                <Input id="tEmail" type="email" value={tEmail} onChange={e => setTEmail(e.target.value)} required placeholder="john@example.com" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="tPhone">Phone (Optional)</Label>
-                <Input id="tPhone" type="tel" value={tPhone} onChange={e => setTPhone(e.target.value)} placeholder="+1 555 555 5555" />
-              </div>
-              <Button type="submit" variant="outline" className="w-full mt-2" disabled={loadingTrainerize}>
-                {loadingTrainerize ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-                Add Client
-              </Button>
-            </form>
           </CardContent>
         </Card>
       </div>

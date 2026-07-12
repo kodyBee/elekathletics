@@ -1,7 +1,7 @@
 import { type NextRequest } from "next/server";
 import { getStripe, PACKAGE_PRICES } from "@/lib/stripe";
 import { addBooking, confirmBooking, type BookingInput } from "@/lib/bookings";
-import { sendConsultationWebhook } from "@/lib/zapier";
+import { sendConsultationEmails } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -63,8 +63,8 @@ export async function POST(request: NextRequest) {
   if (isFreeConsultation) {
     await confirmBooking(booking.id, "free_consultation");
 
-    // Fire-and-forget — calendar-only Zap (no Trainerize)
-    sendConsultationWebhook(booking).catch(() => {});
+    // Fire-and-forget — emails coach + client with ICS attachments
+    sendConsultationEmails(booking).catch(() => {});
 
     return Response.json(
       {

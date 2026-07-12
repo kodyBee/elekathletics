@@ -47,22 +47,19 @@ const stats = [
 
 const testimonials = [
   {
-    name: "Maya R.",
-    role: "Marathon runner",
+    name: "Harley B.",
     quote:
-      "Knocked 12 minutes off my PR in one season. The programming finally made sense for my schedule.",
+      "Working with Jon has truly elevated my training. I’ve learned so much about proper form, weightlifting progressions, and how to train more effectively which has made me stronger and more confident in the gym. I really appreciate his knowledge, encouragement, and the way he tailors everything to help me continue improving.",
   },
   {
-    name: "Jordan K.",
-    role: "Busy dad of two",
+    name: "Justin H.",
     quote:
-      "Lost 28 lbs and actually got stronger doing it. No fluff, no shame — just a plan I can stick to.",
+      "I had the annual gala at my kid’s school. I have never received so many compliments on how much better I am looking. I can only thank Jon for making it happen. It’s hard to describe how good I feel and I owe a lot of it to Jon.",
   },
   {
-    name: "Sam D.",
-    role: "Amateur powerlifter",
+    name: "Matt M.",
     quote:
-      "Squat went from 315 to 405 in nine months. Best coach I've ever worked with, hands down.",
+      "Working with Jon has been one of the best decisions I’ve made. He’s helped me build muscle, lose body fat, and completely change my approach to nutrition. His knowledge, attention to detail, and genuine care for his clients make all the difference. I’m so happy with my progress and can’t wait to keep going",
   },
 ];
 
@@ -249,21 +246,34 @@ export default function HomePage() {
           {testimonials.map((t) => (
             <Card
               key={t.name}
-              className="border-border/60 bg-card/60 transition-colors hover:border-primary/40"
+              className="group relative flex flex-col overflow-hidden border-border/60 bg-card/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
             >
-              <CardHeader>
-                <Quote className="size-6 text-primary/70" />
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-foreground/90 leading-relaxed">
+              <div
+                className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+                aria-hidden
+              />
+              <Quote
+                className="pointer-events-none absolute -right-2 -top-2 size-20 text-primary/5 transition-colors group-hover:text-primary/10"
+                aria-hidden
+              />
+              <CardContent className="relative flex flex-1 flex-col gap-5 pt-6">
+                <p className="flex-1 text-foreground/90 leading-relaxed">
                   &ldquo;{t.quote}&rdquo;
                 </p>
-                <Separator />
-                <div>
-                  <p className="text-sm font-semibold">{t.name}</p>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                    {t.role}
-                  </p>
+                <Separator className="bg-border/60" />
+                <div className="flex items-center gap-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary ring-1 ring-primary/20">
+                    {t.name
+                      .split(" ")
+                      .map((part) => part[0])
+                      .join("")}
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold">{t.name}</p>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                      Verified client
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

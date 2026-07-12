@@ -4,6 +4,7 @@ import {
   getInquiries,
   type InquiryTopic,
 } from "@/lib/inquiries";
+import { sendInquiryNotification } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,9 @@ export async function POST(request: NextRequest) {
     message,
     topic,
   });
+
+  // Fire-and-forget email notification to coach
+  sendInquiryNotification(inquiry).catch(() => {});
 
   return NextResponse.json({ ok: true, inquiry });
 }
