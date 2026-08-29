@@ -1,7 +1,6 @@
-import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import path from "node:path";
 import { startOfDay, addDays } from "date-fns";
+
+import { getRedis, parseRecord } from "@/lib/redis";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -54,57 +53,75 @@ export function getTimeSlotsForDate(dateStr: string): string[] {
   return WEEKDAY_TIMES;
 }
 
-// ─── File helpers ───────────────────────────────────────────────────────────
+// ─── Redis keys ─────────────────────────────────────────────────────────────
+//
+// bookings                      hash   id -> Booking JSON
+// booking:slot:{date}:{time}    string bookingId — the atomic slot claim.
+//                                      Expires with the pending hold; made
+//                                      permanent once payment is confirmed.
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "bookings.json");
+const BOOKINGS_KEY = "bookings";
 
-async function ensureDataFile(): Promise<void> {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true });
+const PENDING_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const PENDING_TIMEOUT_SEC = PENDING_TIMEOUT_MS / 1000;
+
+function slotKey(dateStr: string, time: string): string {
+  return `booking:slot:${dateStr}:${time}`;
+}
+
+function isExpiredPending(b: Booking, now: number): boolean {
+  if (b.status !== "pending_payment") return false;
+  return now - new Date(b.createdAt).getTime() >= PENDING_TIMEOUT_MS;
+}
+
+/**
+ * Loads every booking, dropping pending holds that have timed out.
+ *
+ * Expired holds are purged in the background so a read never blocks on the
+ * cleanup round trip. The slot claim keys expire on their own TTL, so a failed
+ * purge frees the slot regardless.
+ */
+async function loadBookings(): Promise<Booking[]> {
+  const redis = getRedis();
+  const raw = await redis.hgetall<Record<string, unknown>>(BOOKINGS_KEY);
+  if (!raw) return [];
+
+  const now = Date.now();
+  const live: Booking[] = [];
+  const expired: Booking[] = [];
+
+  for (const value of Object.values(raw)) {
+    const booking = parseRecord<Booking>(value);
+    if (!booking) continue;
+    if (isExpiredPending(booking, now)) expired.push(booking);
+    else live.push(booking);
   }
-  if (!existsSync(DATA_FILE)) {
-    await writeFile(DATA_FILE, "[]", "utf-8");
+
+  if (expired.length > 0) void purgeExpired(expired);
+
+  return live;
+}
+
+async function purgeExpired(expired: Booking[]): Promise<void> {
+  try {
+    const redis = getRedis();
+    const pipeline = redis.pipeline();
+    pipeline.hdel(BOOKINGS_KEY, ...expired.map((b) => b.id));
+    for (const b of expired) pipeline.del(slotKey(b.date, b.time));
+    await pipeline.exec();
+  } catch (error) {
+    console.error("[bookings] failed to purge expired holds", error);
   }
 }
 
 export async function getBookings(): Promise<Booking[]> {
-  await ensureDataFile();
-  const raw = await readFile(DATA_FILE, "utf-8");
-  return JSON.parse(raw) as Booking[];
-}
-
-async function saveBookings(bookings: Booking[]): Promise<void> {
-  await ensureDataFile();
-  await writeFile(DATA_FILE, JSON.stringify(bookings, null, 2), "utf-8");
-}
-
-// ─── Cleanup ────────────────────────────────────────────────────────────────
-
-const PENDING_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-
-/**
- * Removes pending_payment bookings older than 30 minutes.
- * Called before reads to keep stale holds from blocking slots.
- */
-async function cleanupExpiredPending(): Promise<void> {
-  const all = await getBookings();
-  const now = Date.now();
-  const cleaned = all.filter((b) => {
-    if (b.status !== "pending_payment") return true;
-    const age = now - new Date(b.createdAt).getTime();
-    return age < PENDING_TIMEOUT_MS;
-  });
-  if (cleaned.length !== all.length) {
-    await saveBookings(cleaned);
-  }
+  return loadBookings();
 }
 
 // ─── Query helpers ──────────────────────────────────────────────────────────
 
 export async function getBookingsForDate(dateStr: string): Promise<Booking[]> {
-  await cleanupExpiredPending();
-  const all = await getBookings();
+  const all = await loadBookings();
   return all.filter((b) => b.date === dateStr);
 }
 
@@ -122,6 +139,14 @@ export async function getBookedSlots(dateStr: string): Promise<string[]> {
   return dayBookings.map((b) => b.time);
 }
 
+/** Formats a UTC-anchored Date as an ISO calendar date (YYYY-MM-DD). */
+function toIsoDate(d: Date): string {
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 /**
  * Returns ISO date strings within [start, end) that have every available
  * time slot booked (i.e. the day is fully booked).
@@ -130,22 +155,32 @@ export async function getFullyBookedDates(
   startDate: string,
   endDate: string
 ): Promise<string[]> {
-  await cleanupExpiredPending();
-  const all = await getBookings();
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const all = await loadBookings();
+
+  const start = new Date(startDate + "T00:00:00Z");
+  const end = new Date(endDate + "T00:00:00Z");
   const fullyBooked: string[] = [];
 
-  for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-    const iso = d.toISOString().split("T")[0];
+  const bookedByDate = new Map<string, Set<string>>();
+  for (const b of all) {
+    if (!bookedByDate.has(b.date)) bookedByDate.set(b.date, new Set());
+    bookedByDate.get(b.date)!.add(b.time);
+  }
+
+  for (
+    let d = new Date(start);
+    d < end;
+    d.setUTCDate(d.getUTCDate() + 1)
+  ) {
+    const iso = toIsoDate(d);
     const slots = getTimeSlotsForDate(iso);
     if (slots.length === 0) {
       // Sunday — treat as fully booked so it greys out
       fullyBooked.push(iso);
       continue;
     }
-    const booked = all.filter((b) => b.date === iso).map((b) => b.time);
-    if (slots.every((s) => booked.includes(s))) {
+    const booked = bookedByDate.get(iso);
+    if (booked && slots.every((s) => booked.has(s))) {
       fullyBooked.push(iso);
     }
   }
@@ -161,8 +196,7 @@ export async function getMonthBookedSlots(
   year: number,
   month: number // 1-indexed
 ): Promise<Record<string, string[]>> {
-  await cleanupExpiredPending();
-  const all = await getBookings();
+  const all = await loadBookings();
   const result: Record<string, string[]> = {};
 
   for (const b of all) {
@@ -204,17 +238,7 @@ export async function addBooking(
     };
   }
 
-  // 3. Check slot availability (includes pending bookings)
-  const available = await isSlotAvailable(input.date, input.time);
-  if (!available) {
-    return {
-      ok: false,
-      error: "This time slot is already booked. Please choose a different time.",
-      status: 409,
-    };
-  }
-
-  // 4. Create the booking with pending status
+  const redis = getRedis();
   const booking: Booking = {
     id: crypto.randomUUID(),
     name: input.name,
@@ -228,9 +252,31 @@ export async function addBooking(
     createdAt: new Date().toISOString(),
   };
 
-  const bookings = await getBookings();
-  bookings.push(booking);
-  await saveBookings(bookings);
+  // 3. Claim the slot atomically. SET NX is the single source of truth for
+  //    "is this slot taken" — two people checking out at the same moment can
+  //    no longer both win. The TTL matches the pending-payment window, so an
+  //    abandoned checkout releases the slot on its own.
+  const claimed = await redis.set(slotKey(input.date, input.time), booking.id, {
+    nx: true,
+    ex: PENDING_TIMEOUT_SEC,
+  });
+
+  if (claimed !== "OK") {
+    return {
+      ok: false,
+      error: "This time slot is already booked. Please choose a different time.",
+      status: 409,
+    };
+  }
+
+  // 4. Persist the booking. If this fails, release the claim so the slot
+  //    doesn't sit blocked for the full TTL.
+  try {
+    await redis.hset(BOOKINGS_KEY, { [booking.id]: JSON.stringify(booking) });
+  } catch (error) {
+    await redis.del(slotKey(input.date, input.time)).catch(() => {});
+    throw error;
+  }
 
   return { ok: true, booking };
 }
@@ -243,13 +289,21 @@ export async function confirmBooking(
   bookingId: string,
   stripeSessionId: string
 ): Promise<boolean> {
-  const bookings = await getBookings();
-  const idx = bookings.findIndex((b) => b.id === bookingId);
-  if (idx === -1) return false;
+  const redis = getRedis();
+  const booking = await getBookingById(bookingId);
+  if (!booking) return false;
 
-  bookings[idx].status = "confirmed";
-  bookings[idx].stripeSessionId = stripeSessionId;
-  await saveBookings(bookings);
+  const confirmed: Booking = {
+    ...booking,
+    status: "confirmed",
+    stripeSessionId,
+  };
+
+  await redis.hset(BOOKINGS_KEY, { [bookingId]: JSON.stringify(confirmed) });
+
+  // The hold is now a permanent reservation — drop the expiry from the claim.
+  await redis.persist(slotKey(booking.date, booking.time)).catch(() => {});
+
   return true;
 }
 
@@ -259,6 +313,7 @@ export async function confirmBooking(
 export async function getBookingById(
   bookingId: string
 ): Promise<Booking | null> {
-  const bookings = await getBookings();
-  return bookings.find((b) => b.id === bookingId) ?? null;
+  const redis = getRedis();
+  const raw = await redis.hget(BOOKINGS_KEY, bookingId);
+  return parseRecord<Booking>(raw);
 }

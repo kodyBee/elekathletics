@@ -1,5 +1,6 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
-import { Redis } from "@upstash/redis";
+
+import { getRedis } from "@/lib/redis";
 
 export interface AuthData {
   passwordHash: string;
@@ -10,22 +11,6 @@ export interface AuthData {
 
 const AUTH_KEY = "coach:auth";
 const DEFAULT_PASSWORD = "changeme123";
-
-let client: Redis | null = null;
-
-function getRedis(): Redis {
-  if (client) return client;
-  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
-  const token =
-    process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
-  if (!url || !token) {
-    throw new Error(
-      "Missing Upstash Redis env vars (UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN)."
-    );
-  }
-  client = new Redis({ url, token });
-  return client;
-}
 
 function hashPassword(password: string, salt: string): string {
   return scryptSync(password, salt, 64).toString("hex");

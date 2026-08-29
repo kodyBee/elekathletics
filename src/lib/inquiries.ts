@@ -1,6 +1,4 @@
-import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import { getRedis, parseRecord } from "@/lib/redis";
 
 export type InquiryStatus = "new" | "resolved";
 export type InquiryTopic = "general" | "in-person" | "custom";
@@ -24,33 +22,27 @@ export interface InquiryInput {
   topic?: InquiryTopic;
 }
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "inquiries.json");
-
-async function ensureDataFile(): Promise<void> {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true });
-  }
-  if (!existsSync(DATA_FILE)) {
-    await writeFile(DATA_FILE, "[]", "utf-8");
-  }
-}
+// inquiries   hash   id -> Inquiry JSON
+const INQUIRIES_KEY = "inquiries";
 
 export async function getInquiries(): Promise<Inquiry[]> {
-  await ensureDataFile();
-  const raw = await readFile(DATA_FILE, "utf-8");
-  const list = JSON.parse(raw) as Inquiry[];
+  const redis = getRedis();
+  const raw = await redis.hgetall<Record<string, unknown>>(INQUIRIES_KEY);
+  if (!raw) return [];
+
+  const list: Inquiry[] = [];
+  for (const value of Object.values(raw)) {
+    const inquiry = parseRecord<Inquiry>(value);
+    if (inquiry) list.push(inquiry);
+  }
+
   return list.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 }
 
-async function saveInquiries(inquiries: Inquiry[]): Promise<void> {
-  await ensureDataFile();
-  await writeFile(DATA_FILE, JSON.stringify(inquiries, null, 2), "utf-8");
-}
-
 export async function addInquiry(input: InquiryInput): Promise<Inquiry> {
+  const redis = getRedis();
   const inquiry: Inquiry = {
     id: crypto.randomUUID(),
     name: input.name,
@@ -61,9 +53,8 @@ export async function addInquiry(input: InquiryInput): Promise<Inquiry> {
     status: "new",
     createdAt: new Date().toISOString(),
   };
-  const all = await getInquiries();
-  all.push(inquiry);
-  await saveInquiries(all);
+
+  await redis.hset(INQUIRIES_KEY, { [inquiry.id]: JSON.stringify(inquiry) });
   return inquiry;
 }
 
@@ -71,18 +62,17 @@ export async function updateInquiryStatus(
   id: string,
   status: InquiryStatus
 ): Promise<Inquiry | null> {
-  const all = await getInquiries();
-  const idx = all.findIndex((i) => i.id === id);
-  if (idx === -1) return null;
-  all[idx].status = status;
-  await saveInquiries(all);
-  return all[idx];
+  const redis = getRedis();
+  const existing = parseRecord<Inquiry>(await redis.hget(INQUIRIES_KEY, id));
+  if (!existing) return null;
+
+  const updated: Inquiry = { ...existing, status };
+  await redis.hset(INQUIRIES_KEY, { [id]: JSON.stringify(updated) });
+  return updated;
 }
 
 export async function deleteInquiry(id: string): Promise<boolean> {
-  const all = await getInquiries();
-  const next = all.filter((i) => i.id !== id);
-  if (next.length === all.length) return false;
-  await saveInquiries(next);
-  return true;
+  const redis = getRedis();
+  const removed = await redis.hdel(INQUIRIES_KEY, id);
+  return removed > 0;
 }
