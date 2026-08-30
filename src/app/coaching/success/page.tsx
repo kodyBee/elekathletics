@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "Booking Confirmed",
-  description: "Your session has been booked and payment confirmed.",
+  title: "Consultation Booked",
+  description: "Your free consultation is on the calendar.",
 };
 
 export default function BookingSuccessPage() {
@@ -20,7 +20,7 @@ export default function BookingSuccessPage() {
           </div>
 
           <Badge variant="outline" className="border-primary/40 text-primary">
-            Payment confirmed
+            Consultation booked
           </Badge>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
@@ -29,15 +29,15 @@ export default function BookingSuccessPage() {
           </h1>
 
           <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto">
-            Payment went through and your session is locked in.
-            You&apos;ll get a confirmation email shortly with all the details.
+Your consultation is locked in. Check your inbox — the confirmation
+            email has a calendar invite attached so you can add it in one tap.
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center pt-4">
             <Button asChild size="lg" className="w-full sm:w-auto">
               <Link href="/coaching">
                 <Calendar className="mr-2 size-4" />
-                Book another session
+                Back to coaching
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">

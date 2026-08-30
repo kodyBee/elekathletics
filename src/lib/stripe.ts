@@ -18,25 +18,3 @@ export function getStripe(): Stripe {
   }
   return _stripe;
 }
-
-/**
- * Package → Stripe Price ID mapping.
- *
- * Elek creates Products + Prices in the Stripe Dashboard, then pastes
- * the Price IDs here. Each key matches a `value` from the PACKAGES array
- * in the booking form.
- *
- * Price IDs look like:  price_1abc123...
- *
- * The `mode` field tells Checkout whether this is a one-time payment
- * or a recurring subscription.
- */
-export const PACKAGE_PRICES: Record<
-  string,
-  { priceId: string; mode: "payment" | "subscription" }
-> = {
-  "everything-included": {
-    priceId: process.env.STRIPE_PRICE_EVERYTHING_INCLUDED ?? "",
-    mode: "subscription",
-  },
-};

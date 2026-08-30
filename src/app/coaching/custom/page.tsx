@@ -94,10 +94,7 @@ export default function CustomPlanPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <BookingForm
-                defaultPackage="consultation"
-                hidePackageSelection={true}
-              />
+              <BookingForm />
             </CardContent>
           </Card>
         </div>

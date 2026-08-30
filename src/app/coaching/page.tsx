@@ -137,8 +137,8 @@ export default function CoachingPage() {
             </CardContent>
             <CardFooter>
               <Button asChild size="lg" className="w-full">
-                <Link href="/coaching/book">
-                  Start coaching
+                <Link href="/coaching/custom">
+                  Book a free consult
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
