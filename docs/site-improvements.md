@@ -277,3 +277,31 @@ default for a first-time sender.
 **Deploy order matters.** The `<img src>` is absolute
 (`https://elekathletics.com/email-logo.png`). Any email sent before this
 deploys will show a broken logo.
+
+---
+
+## Split sender for coach-facing email (Aug 2026)
+
+The two emails that go *to* Elek (new consult booked, new inquiry) now send
+from a different address than the client confirmation.
+
+**Why.** `elekathletics.com` is on Google Workspace (`MX 1 smtp.google.com`).
+Switching `EMAIL_FROM` to `Jon@elekathletics.com` — worth doing, since Gmail
+may then show his profile photo as the sender avatar — would have made the
+coach notifications From Jon, To Jon, relayed by Resend. Workspace treats mail
+claiming to be from your own domain arriving on outside infrastructure as
+spoofing and can quarantine it even when DMARC passes. The booking
+notification is the one email he cannot afford to miss.
+
+**How.** `COACH_NOTIFICATION_FROM` overrides the sender for those two emails.
+When it is unset, `pickCoachNotificationFrom()` compares mailboxes
+case-insensitively and, only on a collision, substitutes
+`hello@<domain>` and logs a warning. An explicit setting always wins. So the
+trap cannot be re-entered by setting `EMAIL_FROM` and forgetting this.
+
+Replies are unaffected: both coach emails set `replyTo` to the client, so the
+From address is never the one anyone answers, and it does not need to be a
+real mailbox.
+
+**Not covered:** the domain's DMARC is `p=none` with no `rua=`, so
+authentication failures go unreported. Worth adding a reporting address.
