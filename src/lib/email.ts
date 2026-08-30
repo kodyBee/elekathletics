@@ -9,10 +9,22 @@ import type { Inquiry } from "./inquiries";
  */
 let _resend: Resend | null = null;
 
+let _warnedNoKey = false;
+
 function getResend(): Resend | null {
   if (_resend) return _resend;
   const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
+  if (!key) {
+    // Every sender bails out early when this is null. Without a log that is
+    // indistinguishable from mail being sent successfully.
+    if (!_warnedNoKey) {
+      console.error(
+        "[Email] RESEND_API_KEY is not set — no mail will be sent from this environment."
+      );
+      _warnedNoKey = true;
+    }
+    return null;
+  }
   _resend = new Resend(key);
   return _resend;
 }

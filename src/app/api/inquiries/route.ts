@@ -50,8 +50,11 @@ export async function POST(request: NextRequest) {
     topic,
   });
 
-  // Fire-and-forget email notification to coach
-  sendInquiryNotification(inquiry).catch(() => {});
+  // Awaited — a fire-and-forget promise can be killed when the serverless
+  // function freezes after responding.
+  await sendInquiryNotification(inquiry).catch((err) =>
+    console.error("[Inquiries] coach notification failed:", err)
+  );
 
   return NextResponse.json({ ok: true, inquiry });
 }
