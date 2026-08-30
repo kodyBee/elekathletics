@@ -1,6 +1,7 @@
 import { startOfDay, addDays } from "date-fns";
 
 import { getRedis, parseRecord } from "@/lib/redis";
+import { getTimeSlotsForDate } from "@/lib/availability";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -31,27 +32,17 @@ export interface BookingInput {
 }
 
 // ─── Available times per day-of-week ────────────────────────────────────────
-// Weekdays: 6am–7pm  |  Saturday: 7am–1pm  |  Sunday: closed
+//
+// The slot arrays and the copy derived from them live in `lib/availability`,
+// which stays free of Redis so the client booking form can share them instead
+// of keeping its own copy. Re-exported here because the API routes and the
+// booking page already import them from this module.
 
-const WEEKDAY_TIMES = [
-  "06:00", "07:00", "08:00", "09:00",
-  "12:00", "16:00", "17:00", "18:00", "19:00",
-];
-
-const SATURDAY_TIMES = [
-  "07:00", "08:00", "09:00", "12:00",
-];
-
-/**
- * Returns the available time slots for a given date string (ISO).
- * Sunday returns an empty array (closed).
- */
-export function getTimeSlotsForDate(dateStr: string): string[] {
-  const dow = new Date(dateStr + "T12:00:00").getDay(); // 0 = Sun … 6 = Sat
-  if (dow === 0) return [];          // Sunday — closed
-  if (dow === 6) return SATURDAY_TIMES;
-  return WEEKDAY_TIMES;
-}
+export {
+  formatSlotWindows,
+  availabilityWindows,
+  getTimeSlotsForDate,
+} from "@/lib/availability";
 
 // ─── Redis keys ─────────────────────────────────────────────────────────────
 //

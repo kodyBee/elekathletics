@@ -208,7 +208,7 @@ export default function HomePage() {
             </h2>
             <ul className="space-y-3 text-muted-foreground">
               {[
-                "Free 20-minute intro call to align on goals and timelines.",
+                "Free 15-minute intro call to align on goals and timelines.",
                 "Movement screen + baseline assessment so the plan fits your body.",
                 "Weekly programming with video form checks and weekly check-ins.",
                 "Quarterly retests so progress is measured, not guessed.",
@@ -238,7 +238,7 @@ export default function HomePage() {
             Client wins
           </Badge>
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Real people. Real numbers.
+            Real people. Real results.
           </h2>
         </div>
 

@@ -14,11 +14,21 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { BookingForm } from "@/components/booking-form";
+import { availabilityWindows } from "@/lib/bookings";
 
 export const metadata: Metadata = {
   title: "Book — Everything Included Plan",
   description:
     "Book your first session for the Everything Included coaching plan. $350/mo — fully customized training and ongoing support.",
+  alternates: {
+    canonical: "/coaching/book",
+  },
+  openGraph: {
+    title: "Book the Everything Included Plan · Elek Strength",
+    description:
+      "Fully customized programming, video form reviews, and direct messaging with Elek. $350/mo.",
+    url: "/coaching/book",
+  },
 };
 
 export default function BookPage() {
@@ -70,6 +80,20 @@ export default function BookPage() {
               ))}
             </ul>
 
+            {/* Not-ready-yet path — the consult, not just "pay now" */}
+            <div className="rounded-lg border border-border/60 bg-card/60 p-4">
+              <p className="text-sm text-muted-foreground">
+                Not ready to commit? Start with a{" "}
+                <Link
+                  href="/coaching/custom"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  free 15-minute consult
+                </Link>{" "}
+                — no card required.
+              </p>
+            </div>
+
             {/* Schedule strip */}
             <div className="pt-4 space-y-3">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
@@ -81,7 +105,7 @@ export default function BookPage() {
                   <div>
                     <p className="text-sm font-medium">Weekdays</p>
                     <p className="text-xs text-muted-foreground">
-                      6:00am – 8:00pm
+                      {availabilityWindows.weekdays}
                     </p>
                   </div>
                 </div>
@@ -90,7 +114,7 @@ export default function BookPage() {
                   <div>
                     <p className="text-sm font-medium">Saturday</p>
                     <p className="text-xs text-muted-foreground">
-                      7:00am – 1:00pm
+                      {availabilityWindows.saturday}
                     </p>
                   </div>
                 </div>

@@ -24,27 +24,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Slot arrays live in `lib/availability` — the same module the server reads —
+// so the form can never offer a time the booking API would reject.
+import { getTimeSlotsForDate } from "@/lib/availability";
+
 const PACKAGES = [
   { value: "everything-included", label: "Everything Included Plan — $350/mo" },
 ];
-
-// All possible time slots — the form will filter by day-of-week availability
-// and disable already-booked ones.
-const WEEKDAY_TIMES = [
-  "06:00", "07:00", "08:00", "09:00",
-  "12:00", "16:00", "17:00", "18:00", "19:00",
-];
-
-const SATURDAY_TIMES = [
-  "07:00", "08:00", "09:00", "12:00",
-];
-
-function getTimeSlotsForDate(dateStr: string): string[] {
-  const dow = new Date(dateStr + "T12:00:00").getDay();
-  if (dow === 0) return [];
-  if (dow === 6) return SATURDAY_TIMES;
-  return WEEKDAY_TIMES;
-}
 
 function formatTime12h(time24: string): string {
   const [h, m] = time24.split(":").map(Number);
@@ -399,6 +385,7 @@ END:VCALENDAR`;
                   setDate(d);
                 }}
                 disabled={disabledDays}
+                defaultMonth={displayedMonth}
                 onMonthChange={(m) => setDisplayedMonth(m)}
                 autoFocus
               />

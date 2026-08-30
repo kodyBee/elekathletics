@@ -18,7 +18,16 @@ import { ContactForm } from "@/components/contact-form";
 export const metadata: Metadata = {
   title: "In-Person Training — Contact",
   description:
-    "Reach out to arrange in-person training sessions with Elek. We'll match your schedule, location, and goals.",
+    "Reach out to arrange in-person training sessions with Elek in Burbank, CA. We'll match your schedule, location, and goals.",
+  alternates: {
+    canonical: "/coaching/in-person",
+  },
+  openGraph: {
+    title: "In-Person Training in Burbank · Elek Strength",
+    description:
+      "1-on-1 coaching in the room with you. Reach out to arrange schedule, location, and pricing.",
+    url: "/coaching/in-person",
+  },
 };
 
 export default function InPersonPage() {
