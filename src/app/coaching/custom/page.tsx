@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     canonical: "/coaching/custom",
   },
   openGraph: {
-    title: "Book a free 15-minute consult · Elek Strength",
+    title: "Book a free 15-minute consult · Elek Athletics",
     description:
       "Talk through your goals and training history and leave with a recommendation on the plan that fits. No pressure, no card required.",
     url: "/coaching/custom",

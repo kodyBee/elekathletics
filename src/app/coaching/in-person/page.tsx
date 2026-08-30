@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     canonical: "/coaching/in-person",
   },
   openGraph: {
-    title: "In-Person Training in Burbank · Elek Strength",
+    title: "In-Person Training in Burbank · Elek Athletics",
     description:
       "1-on-1 coaching in the room with you. Reach out to arrange schedule, location, and pricing.",
     url: "/coaching/in-person",

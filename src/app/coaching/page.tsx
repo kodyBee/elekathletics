@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     canonical: "/coaching",
   },
   openGraph: {
-    title: "Coaching & Booking · Elek Strength",
+    title: "Coaching & Booking · Elek Athletics",
     description:
       "1-on-1, online, and hybrid coaching packages. Book a session that fits your goals and your week.",
     url: "/coaching",
@@ -214,7 +214,7 @@ export default function CoachingPage() {
               </span>
               <CardTitle className="text-2xl">In-Person Training</CardTitle>
               <CardDescription>
-                Train with Elek face-to-face. Sessions are arranged directly
+                Train with Jonny face-to-face. Sessions are arranged directly
                 so we can match your schedule, location, and goals.
               </CardDescription>
               <div className="mt-4 flex items-baseline gap-1">
