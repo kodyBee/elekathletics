@@ -14,7 +14,7 @@ export const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://elekathletics.com";
 
 export const siteConfig = {
-  name: "Elek Strength",
+  name: "Elek Athletics",
   shortName: "Elek",
   legalName: "Elek Athletics",
   tagline: "Train Hard. Move Better. Live Stronger.",

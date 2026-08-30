@@ -25,8 +25,8 @@ const anton = Anton({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Elek Strength — Personal Training & Coaching in Burbank, CA",
-    template: "%s · Elek Strength",
+    default: "Elek Athletics — Personal Training & Coaching in Burbank, CA",
+    template: "%s · Elek Athletics",
   },
   description:
     "1-on-1 personal training, online coaching, and performance programming in Burbank, CA. Train hard. Recover smart. Move better.",
@@ -48,13 +48,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "/",
     siteName: siteConfig.legalName,
-    title: "Elek Strength — Personal Training & Coaching in Burbank, CA",
+    title: "Elek Athletics — Personal Training & Coaching in Burbank, CA",
     description:
       "1-on-1 personal training, online coaching, and performance programming. Book a free 15-minute consult.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elek Strength — Personal Training & Coaching",
+    title: "Elek Athletics — Personal Training & Coaching",
     description:
       "1-on-1 personal training, online coaching, and performance programming in Burbank, CA.",
   },

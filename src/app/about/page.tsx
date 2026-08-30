@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     canonical: "/about",
   },
   openGraph: {
-    title: "About Jonny Elek · Elek Strength",
+    title: "About Jonny Elek · Elek Athletics",
     description:
       "Marine Corps veteran, competitive bodybuilder, and personal trainer working out of Winner’s Circle in Burbank, CA.",
     url: "/about",
