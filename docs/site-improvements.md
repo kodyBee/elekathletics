@@ -196,3 +196,53 @@ blocker as item 4), and no before/after numbers in the testimonials section.
   `lib/availability.ts`; `lib/bookings.ts` re-exports it so the API routes
   and booking page imports are unchanged, and `lib/site.ts` can read the
   windows without pulling Redis into the client bundle.
+
+---
+
+## Flow change: consultation-only booking (Aug 2026)
+
+Clients no longer pay through the site. Every booking made on the site is a
+free consultation; Elek sends a Stripe payment link from the coach dashboard
+after the call. The dashboard's link generator is unchanged and was already
+the only payment path that worked.
+
+**Why.** "Book & pay" was broken in production while the payment links worked,
+and the asymmetry explains itself: `api/coach/create-payment-link` creates a
+Product and Price at runtime, so it works under whichever key it is given.
+Checkout referenced a fixed `STRIPE_PRICE_EVERYTHING_INCLUDED`, and a Stripe
+price ID only exists in the mode it was created in — a test-mode price is
+invisible to a live key. Rather than maintain a price ID, a `mode` flag, and a
+mode-specific webhook signing secret in step with the dashboard, the site now
+has no payment surface at all.
+
+**Removed:** `/coaching/book`, `/coaching/cancel`, `api/webhooks/stripe`,
+`PACKAGE_PRICES`, and `sendPaidBookingNotification`. `api/checkout` became
+`api/consultations` — it no longer touches Stripe, forces the package to
+`consultation` server-side regardless of the request body, and returns a
+booking id rather than an absolute URL, so the consult path no longer depends
+on `BASE_URL`.
+
+**Kept:** `getStripe()` and the payment-link route. The $350/mo price still
+appears on `/coaching` and in the JSON-LD offer — only the call to action
+changed, from "Start coaching" to "Book a free consult".
+
+**Repointed:** the three header CTAs, the About CTA, and the flagship plan card
+all now go to `/coaching/custom`. `/coaching/book` was deleted rather than
+redirected, so any old link to it 404s.
+
+**Env vars now unused in production:** `STRIPE_PRICE_EVERYTHING_INCLUDED` and
+`STRIPE_WEBHOOK_SECRET` can be deleted from Vercel. `STRIPE_SECRET_KEY` is
+still required — the payment-link generator needs it, and it should be a live
+key. `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` and `ZAPIER_WEBHOOK_URL` were
+already read by nothing.
+
+**Also removed:** the booking form's in-component success screen. It was
+unreachable — `setSuccessData` was only ever called with `null`, so the form
+always redirected to `/coaching/success`. It had "add to Google/Apple
+Calendar" buttons that never rendered; the confirmation email's ICS attachment
+covers that.
+
+**Consequence worth knowing:** the consultation confirmation email is now the
+only confirmation a client receives. If Resend is misconfigured, a client books
+and hears nothing. `RESEND_API_KEY` and a verified-domain `EMAIL_FROM` are
+no longer optional polish.

@@ -63,7 +63,7 @@ export function StructuredData() {
         name: "Everything Included Plan",
         price: 350,
         priceCurrency: "USD",
-        url: `${siteUrl}/coaching/book`,
+        url: `${siteUrl}/coaching`,
         eligibleDuration: {
           "@type": "QuantitativeValue",
           value: 1,

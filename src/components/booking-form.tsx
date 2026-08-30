@@ -12,25 +12,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // Slot arrays live in `lib/availability` — the same module the server reads —
 // so the form can never offer a time the booking API would reject.
 import { getTimeSlotsForDate } from "@/lib/availability";
-
-const PACKAGES = [
-  { value: "everything-included", label: "Everything Included Plan — $350/mo" },
-];
 
 function formatTime12h(time24: string): string {
   const [h, m] = time24.split(":").map(Number);
@@ -48,23 +44,10 @@ interface MonthAvailability {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export function BookingForm({
-  defaultPackage = "",
-  hidePackageSelection = false,
-}: {
-  defaultPackage?: string;
-  hidePackageSelection?: boolean;
-}) {
+export function BookingForm() {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
-  const [pkg, setPkg] = React.useState<string>(defaultPackage);
   const [time, setTime] = React.useState<string>("");
   const [submitting, setSubmitting] = React.useState(false);
-  const [successData, setSuccessData] = React.useState<{
-    name: string;
-    date: Date;
-    time: string;
-    pkg: string;
-  } | null>(null);
 
   // Availability state
   const [availability, setAvailability] = React.useState<MonthAvailability>({
@@ -154,7 +137,7 @@ export function BookingForm({
     const phone = String(data.get("phone") ?? "").trim();
     const goals = String(data.get("goals") ?? "").trim();
 
-    if (!name || !email || !pkg || !date || !time) {
+    if (!name || !email || !date || !time) {
       toast.error("Please complete every field before submitting.");
       return;
     }
@@ -162,7 +145,7 @@ export function BookingForm({
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/checkout", {
+      const res = await fetch("/api/consultations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -171,7 +154,6 @@ export function BookingForm({
           phone: phone || undefined,
           date: date.toISOString().split("T")[0],
           time,
-          package: pkg,
           goals: goals || undefined,
         }),
       });
@@ -190,11 +172,10 @@ export function BookingForm({
         return;
       }
 
-      // Redirect to Stripe Checkout or Success page
-      if (result.successUrl) {
-        window.location.href = result.successUrl;
-      } else if (result.checkoutUrl) {
-        window.location.href = result.checkoutUrl;
+      // Nothing to pay for, so this is a plain in-app navigation — no
+      // absolute URL and no dependency on BASE_URL.
+      if (result.bookingId) {
+        window.location.href = "/coaching/success";
       } else {
         toast.error("Could not complete booking. Please try again.");
       }
@@ -203,101 +184,6 @@ export function BookingForm({
     } finally {
       setSubmitting(false);
     }
-  }
-
-  // ── Success screen ─────────────────────────────────────────────────────
-  if (successData) {
-    const selectedPkg =
-      PACKAGES.find((p) => p.value === successData.pkg)?.label ||
-      "Training Session";
-    const [hours, minutes] = successData.time.split(":").map(Number);
-
-    const start = new Date(successData.date);
-    start.setHours(hours, minutes, 0, 0);
-    const end = new Date(start);
-    end.setHours(hours + 1, minutes, 0, 0);
-
-    const formatICSDate = (d: Date) =>
-      d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-    const title = encodeURIComponent(
-      `Training with Elek - ${selectedPkg}`
-    );
-    const details = encodeURIComponent(
-      `Booking request for ${successData.name}.`
-    );
-
-    const googleCalLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatICSDate(start)}/${formatICSDate(end)}&details=${details}`;
-
-    const handleAppleCalendar = () => {
-      const ics = `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-DTSTART:${formatICSDate(start)}
-DTEND:${formatICSDate(end)}
-SUMMARY:Training with Elek - ${selectedPkg}
-DESCRIPTION:Booking request for ${successData.name}.
-END:VEVENT
-END:VCALENDAR`;
-      const blob = new Blob([ics], {
-        type: "text/calendar;charset=utf-8",
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "training_session.ics");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-
-    return (
-      <div className="flex flex-col items-center justify-center space-y-6 py-12 text-center fade-in animate-in">
-        <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <CheckCircle2 className="size-8" />
-        </div>
-        <div className="space-y-2">
-          <h3 className="text-2xl font-bold tracking-tight">
-            Request received!
-          </h3>
-          <p className="text-muted-foreground max-w-sm">
-            Thanks {successData.name}, I&apos;ll confirm{" "}
-            {format(successData.date, "EEEE, MMMM do")} @{" "}
-            {formatTime12h(successData.time)} within 24 hours.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row w-full max-w-md pt-4">
-          <Button asChild className="w-full">
-            <a
-              href={googleCalLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Add to Google Calendar
-            </a>
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleAppleCalendar}
-          >
-            Add to Apple Calendar
-          </Button>
-        </div>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setSuccessData(null);
-            setDate(undefined);
-            setPkg("");
-            setTime("");
-          }}
-          className="mt-4"
-        >
-          Book another session
-        </Button>
-      </div>
-    );
   }
 
   // ── Form ───────────────────────────────────────────────────────────────
@@ -321,7 +207,9 @@ END:VCALENDAR`;
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <div className="space-y-2">
+        {/* Spans the row: the package selector that used to sit beside this
+            is gone, and a half-width field with a gap reads as unfinished. */}
+        <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="phone">Phone (optional)</Label>
           <Input
             id="phone"
@@ -330,23 +218,6 @@ END:VCALENDAR`;
             placeholder="+1 555 555 5555"
           />
         </div>
-        {!hidePackageSelection && (
-          <div className="space-y-2">
-            <Label htmlFor="package">Package</Label>
-            <Select value={pkg} onValueChange={setPkg}>
-              <SelectTrigger id="package" className="w-full">
-                <SelectValue placeholder="Choose a package" />
-              </SelectTrigger>
-              <SelectContent>
-                {PACKAGES.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -492,14 +363,13 @@ END:VCALENDAR`;
           </>
         ) : (
           <>
-            <Send className="mr-2 size-4" /> {pkg === "consultation" ? "Book consultation" : "Book & pay"}
+            <Send className="mr-2 size-4" /> Book consultation
           </>
         )}
       </Button>
       <p className="text-xs text-muted-foreground">
-        {pkg === "consultation"
-          ? "You'll get a confirmation email shortly. No card required."
-          : "You'll be redirected to Stripe to complete payment securely. Your slot is held for 30 minutes while you check out."}
+        You&apos;ll get a confirmation email with a calendar invite shortly. No
+        card required.
       </p>
     </form>
   );

@@ -82,14 +82,14 @@ export function SiteHeader() {
 
         <div className="hidden md:flex items-center gap-2">
           <Button asChild size="sm" className="font-medium">
-            <Link href="/coaching/book">Book a Session</Link>
+            <Link href="/coaching/custom">Book a Free Consult</Link>
           </Button>
         </div>
 
         {/* Mobile actions */}
         <div className="flex items-center gap-1.5 md:hidden">
           <Button asChild size="sm" className="font-medium">
-            <Link href="/coaching/book">Book</Link>
+            <Link href="/coaching/custom">Book</Link>
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -131,7 +131,7 @@ export function SiteHeader() {
               <div className="mt-auto border-t border-border/60 p-4 safe-pb">
                 <SheetClose asChild>
                   <Button asChild size="lg" className="w-full">
-                    <Link href="/coaching/book">Book a Session</Link>
+                    <Link href="/coaching/custom">Book a Free Consult</Link>
                   </Button>
                 </SheetClose>
               </div>

@@ -109,8 +109,8 @@ export default function AboutPage() {
               </div>
               <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button asChild size="lg" className="w-full sm:w-auto">
-                  <Link href="/coaching/book">
-                    Book a session
+                  <Link href="/coaching/custom">
+                    Book a free consult
                     <ArrowRight className="ml-1 size-4" />
                   </Link>
                 </Button>

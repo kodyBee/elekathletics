@@ -126,40 +126,6 @@ function escapeICS(s: string): string {
 // ─── Email senders ──────────────────────────────────────────────────────────
 
 /**
- * Notify Elek that a paid client signed up. Trainerize entry is manual.
- */
-export async function sendPaidBookingNotification(booking: Booking): Promise<void> {
-  const resend = getResend();
-  if (!resend) return;
-
-  const subject = `New paid client: ${booking.name} (${booking.package})`;
-  const html = `
-    <h2>New paid client</h2>
-    <p>Stripe confirmed payment. Add them to Trainerize when you're ready.</p>
-    <table cellpadding="6" style="border-collapse:collapse;font-family:system-ui,sans-serif;">
-      <tr><td><strong>Name</strong></td><td>${escapeHtml(booking.name)}</td></tr>
-      <tr><td><strong>Email</strong></td><td><a href="mailto:${escapeHtml(booking.email)}">${escapeHtml(booking.email)}</a></td></tr>
-      <tr><td><strong>Phone</strong></td><td>${escapeHtml(booking.phone ?? "—")}</td></tr>
-      <tr><td><strong>Package</strong></td><td>${escapeHtml(booking.package)}</td></tr>
-      <tr><td><strong>Requested date</strong></td><td>${formatLongDate(booking.date)} @ ${formatTime12h(booking.time)}</td></tr>
-      <tr><td><strong>Goals</strong></td><td>${escapeHtml(booking.goals ?? "—")}</td></tr>
-    </table>
-  `;
-
-  try {
-    await resend.emails.send({
-      from: fromAddress(),
-      to: coachEmail(),
-      subject,
-      html,
-      replyTo: booking.email,
-    });
-  } catch (err) {
-    console.error("[Email] paid booking notification failed:", err);
-  }
-}
-
-/**
  * Notify Elek + the client about a free consultation. Includes ICS for both.
  */
 export async function sendConsultationEmails(booking: Booking): Promise<void> {
