@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
+import { SESSION_COOKIE, getSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
-  const authCookie = request.cookies.get("coach_auth");
-  if (!authCookie || authCookie.value !== "true") {
+  const session = await getSession(request.cookies.get(SESSION_COOKIE)?.value);
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

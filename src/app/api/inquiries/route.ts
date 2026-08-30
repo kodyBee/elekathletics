@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { SESSION_COOKIE, getSession } from "@/lib/auth";
 import {
   addInquiry,
   getInquiries,
@@ -10,9 +11,8 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_TOPICS: InquiryTopic[] = ["general", "in-person", "custom"];
 
-function isCoach(request: NextRequest): boolean {
-  const cookie = request.cookies.get("coach_auth");
-  return cookie?.value === "true";
+async function isCoach(request: NextRequest): Promise<boolean> {
+  return (await getSession(request.cookies.get(SESSION_COOKIE)?.value)) !== null;
 }
 
 export async function POST(request: NextRequest) {
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isCoach(request)) {
+  if (!(await isCoach(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const inquiries = await getInquiries();

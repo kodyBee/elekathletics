@@ -305,3 +305,61 @@ real mailbox.
 
 **Not covered:** the domain's DMARC is `p=none` with no `rua=`, so
 authentication failures go unreported. Worth adding a reporting address.
+
+---
+
+## Coach auth: real sessions, and a password reset (Aug 2026)
+
+### The dashboard was not actually protected
+
+`coach_auth` was set to the literal string `"true"`, and both the middleware
+and every API guard checked only that. Anyone could set that cookie by hand:
+
+```
+curl -H 'Cookie: coach_auth=true' https://elekathletics.com/api/inquiries
+```
+
+That returned the full dashboard, every customer inquiry — names, emails,
+message bodies — and the ability to generate Stripe payment links on Elek's
+account. No password involved. Verified against localhost, which runs the same
+guard code as production.
+
+The cookie now carries an unguessable 32-byte id and the truth lives in Redis
+under `coach:session:{id}` with a 30-day TTL. Changing the password calls
+`destroyAllSessions()`, so every existing session dies — the old scheme could
+not invalidate anything, because there was nothing to invalidate. The session
+id is shape-checked before it reaches Redis, since it is interpolated into a
+key. Cookies are now `secure` in production.
+
+`isCoach` had been copy-pasted into three route files with the same weak
+check; all of them now call the shared `getSession`.
+
+### middleware → proxy
+
+Renamed per the Next 16 deprecation the build had been warning about on every
+run. `proxy` runs on the **nodejs** runtime and cannot be configured to edge,
+which is what allows the guard to do a Redis lookup at all.
+
+### Password reset
+
+`coach:auth` was deleted from Redis, so the next login re-seeds
+`DEFAULT_PASSWORD` (`changeme123`) with `mustChangePassword: true` and Elek is
+forced through `/coach/change-password` before reaching the dashboard.
+
+### Dev login
+
+`DEV_COACH_PASSWORD` is a second password accepted **only when
+`NODE_ENV !== "production"`**, so a developer can keep testing after Elek sets
+his own. Vercel always builds with `NODE_ENV=production`, so it cannot open a
+door on the deployed site even if the variable is set there by mistake —
+confirmed by running a production build locally with the variable present and
+watching the login be rejected.
+
+It is deliberately checked in `verifyLogin` and not `verifyPassword`, so the
+dev credential can never satisfy the "current password" check when changing the
+real one.
+
+### Still weak
+
+One shared password with no rate limiting and no lockout. Fine for a
+single-operator dashboard; worth revisiting if more people ever get access.
