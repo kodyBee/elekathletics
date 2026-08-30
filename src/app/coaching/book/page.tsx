@@ -14,6 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { BookingForm } from "@/components/booking-form";
+import { availabilityWindows } from "@/lib/bookings";
 
 export const metadata: Metadata = {
   title: "Book — Everything Included Plan",
@@ -81,7 +82,7 @@ export default function BookPage() {
                   <div>
                     <p className="text-sm font-medium">Weekdays</p>
                     <p className="text-xs text-muted-foreground">
-                      6:00am – 8:00pm
+                      {availabilityWindows.weekdays}
                     </p>
                   </div>
                 </div>
@@ -90,7 +91,7 @@ export default function BookPage() {
                   <div>
                     <p className="text-sm font-medium">Saturday</p>
                     <p className="text-xs text-muted-foreground">
-                      7:00am – 1:00pm
+                      {availabilityWindows.saturday}
                     </p>
                   </div>
                 </div>

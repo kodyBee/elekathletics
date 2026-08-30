@@ -43,6 +43,58 @@ const SATURDAY_TIMES = [
 ];
 
 /**
+ * Collapses a slot list into human-readable session windows.
+ *
+ * Sessions are an hour, so a run of consecutive starts renders as the span the
+ * gym is actually occupied: ["06:00","07:00","08:00","09:00"] -> "6 - 10am".
+ * Derived from the arrays above so the copy on the booking page can never
+ * drift away from what is genuinely bookable.
+ */
+function formatHour(hour24: number): { label: string; meridiem: "am" | "pm" } {
+  const meridiem = hour24 % 24 < 12 ? "am" : "pm";
+  const h = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  return { label: String(h), meridiem };
+}
+
+export function formatSlotWindows(times: string[]): string {
+  if (times.length === 0) return "Closed";
+
+  const hours = [...times]
+    .map((t) => Number(t.slice(0, 2)))
+    .sort((a, b) => a - b);
+
+  // Group consecutive starts into runs.
+  const runs: Array<[number, number]> = [];
+  let runStart = hours[0];
+  let prev = hours[0];
+  for (const h of hours.slice(1)) {
+    if (h === prev + 1) {
+      prev = h;
+      continue;
+    }
+    runs.push([runStart, prev]);
+    runStart = h;
+    prev = h;
+  }
+  runs.push([runStart, prev]);
+
+  return runs
+    .map(([start, lastStart]) => {
+      const from = formatHour(start);
+      const to = formatHour(lastStart + 1); // the session ends an hour later
+      return from.meridiem === to.meridiem
+        ? `${from.label} - ${to.label}${to.meridiem}`
+        : `${from.label}${from.meridiem} - ${to.label}${to.meridiem}`;
+    })
+    .join(" \u00b7 ");
+}
+
+export const availabilityWindows = {
+  weekdays: formatSlotWindows(WEEKDAY_TIMES),
+  saturday: formatSlotWindows(SATURDAY_TIMES),
+};
+
+/**
  * Returns the available time slots for a given date string (ISO).
  * Sunday returns an empty array (closed).
  */

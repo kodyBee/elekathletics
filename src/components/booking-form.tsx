@@ -399,6 +399,7 @@ END:VCALENDAR`;
                   setDate(d);
                 }}
                 disabled={disabledDays}
+                defaultMonth={displayedMonth}
                 onMonthChange={(m) => setDisplayedMonth(m)}
                 autoFocus
               />
