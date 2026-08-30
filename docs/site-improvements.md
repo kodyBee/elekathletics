@@ -246,3 +246,34 @@ covers that.
 only confirmation a client receives. If Resend is misconfigured, a client books
 and hears nothing. `RESEND_API_KEY` and a verified-domain `EMAIL_FROM` are
 no longer optional polish.
+
+---
+
+## Branded transactional email (Aug 2026)
+
+The three notification emails were unstyled `<h2>` + `<table cellpadding="6">`
+fragments. They now share `lib/email-template.ts`, which renders a branded
+600px layout: dark header band, logo, purple rule, detail rows, footer with
+Jon's contact details.
+
+**Why it is built the way it is.** Email clients are not browsers — Outlook
+renders through Word and Gmail strips `<style>` blocks — so the template is
+table-based with inline styles only. No flexbox, no grid, no media queries
+relied upon. The container is fluid with `max-width:600px` and carries an MSO
+conditional wrapper, because Outlook ignores `max-width` and would otherwise
+render it full-bleed.
+
+**The logo.** `public/logo.png` is 1024x1024 and 1.4 MB with a dark background
+baked in — unusable in email, and it would have shown as a dark square on the
+light body. `public/email-logo.png` is instead rasterized from
+`public/ea-logo.svg` with sharp (already present as a Next dependency): 240x214,
+18 KB, transparent. The mark is metallic and disappears on white, which is why
+the header band is dark.
+
+The wordmark under the logo is real text, not part of the image, so the email
+still reads as Elek Athletics when a client blocks images — which most do by
+default for a first-time sender.
+
+**Deploy order matters.** The `<img src>` is absolute
+(`https://elekathletics.com/email-logo.png`). Any email sent before this
+deploys will show a broken logo.

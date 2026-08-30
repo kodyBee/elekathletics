@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { siteConfig } from "./site";
 import type { Booking } from "./bookings";
 import type { Inquiry } from "./inquiries";
+import { renderEmail } from "./email-template";
 
 /**
  * Lazy Resend instance — initialised on first use so the build doesn't
@@ -31,6 +32,10 @@ function getResend(): Resend | null {
 
 function coachEmail(): string {
   return process.env.COACH_EMAIL || siteConfig.contact.email;
+}
+
+function coachDashboardUrl(): string {
+  return `${process.env.BASE_URL || "http://localhost:3000"}/coach`;
 }
 
 function fromAddress(): string {
@@ -163,17 +168,29 @@ export async function sendConsultationEmails(booking: Booking): Promise<void> {
       from: fromAddress(),
       to: coachEmail(),
       subject: `New consult booked: ${booking.name} — ${when}`,
-      html: `
-        <h2>New consultation booked</h2>
-        <table cellpadding="6" style="border-collapse:collapse;font-family:system-ui,sans-serif;">
-          <tr><td><strong>Name</strong></td><td>${escapeHtml(booking.name)}</td></tr>
-          <tr><td><strong>Email</strong></td><td><a href="mailto:${escapeHtml(booking.email)}">${escapeHtml(booking.email)}</a></td></tr>
-          <tr><td><strong>Phone</strong></td><td>${escapeHtml(booking.phone ?? "—")}</td></tr>
-          <tr><td><strong>When</strong></td><td>${when}</td></tr>
-          <tr><td><strong>Goals</strong></td><td>${escapeHtml(booking.goals ?? "—")}</td></tr>
-        </table>
-        <p>Calendar invite attached.</p>
-      `,
+      html: renderEmail({
+        preheader: `${booking.name} — ${when}`,
+        eyebrow: "New booking",
+        heading: "A consult just got booked.",
+        lead: `<strong>${escapeHtml(booking.name)}</strong> took the ${when} slot. The calendar invite is attached to this email.`,
+        rows: [
+          { label: "Name", value: escapeHtml(booking.name) },
+          {
+            label: "Email",
+            value: `<a href="mailto:${escapeHtml(booking.email)}" style="color:#7c3aed;text-decoration:none;">${escapeHtml(booking.email)}</a>`,
+          },
+          {
+            label: "Phone",
+            value: booking.phone
+              ? `<a href="tel:${booking.phone.replace(/[^+d]/g, "")}" style="color:#7c3aed;text-decoration:none;">${escapeHtml(booking.phone)}</a>`
+              : "&mdash;",
+          },
+          { label: "When", value: when },
+          { label: "Goals", value: escapeHtml(booking.goals ?? "—") },
+        ],
+        cta: { label: "Open coach dashboard", url: `${coachDashboardUrl()}` },
+        footnote: "Reply to this email to reach them directly.",
+      }),
       replyTo: booking.email,
       attachments: [icsAttachment],
     });
@@ -187,12 +204,20 @@ export async function sendConsultationEmails(booking: Booking): Promise<void> {
       from: fromAddress(),
       to: booking.email,
       subject: `Your consultation with Elek — ${when}`,
-      html: `
-        <p>Hey ${escapeHtml(booking.name.split(" ")[0])},</p>
-        <p>Your free 15-minute consultation with Elek is confirmed for <strong>${when}</strong>.</p>
-        <p>Calendar invite attached — open it on your phone or computer to add it to your calendar.</p>
-        <p>Talk soon,<br/>Elek Athletics</p>
-      `,
+      html: renderEmail({
+        preheader: `Your free consult is confirmed for ${when}.`,
+        eyebrow: "Consultation confirmed",
+        heading: `You're booked, ${escapeHtml(booking.name.split(" ")[0])}.`,
+        lead: `Your free 15-minute consultation with Jonny is confirmed. We'll talk through your training history, where you want to get to, and which setup actually fits — no pressure, nothing to pay.`,
+        rows: [
+          { label: "When", value: `<strong>${when}</strong>` },
+          { label: "Length", value: "15 minutes" },
+          { label: "Cost", value: "Free" },
+        ],
+        body: `<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:23px;color:#1c1a26;">A calendar invite is attached to this email — open it on your phone or computer to add it to your calendar.</p>`,
+        footnote:
+          "Need to move it or can't make it? Just reply to this email and we'll find another time.",
+      }),
       replyTo: coachEmail(),
       attachments: [icsAttachment],
     });
@@ -224,16 +249,25 @@ export async function sendInquiryNotification(inquiry: Inquiry): Promise<void> {
       from: fromAddress(),
       to: coachEmail(),
       subject,
-      html: `
-        <h2>New inquiry — ${escapeHtml(topicLabel)}</h2>
-        <table cellpadding="6" style="border-collapse:collapse;font-family:system-ui,sans-serif;">
-          <tr><td><strong>Name</strong></td><td>${escapeHtml(inquiry.name)}</td></tr>
-          <tr><td><strong>Email</strong></td><td><a href="mailto:${escapeHtml(inquiry.email)}">${escapeHtml(inquiry.email)}</a></td></tr>
-          ${inquiry.subject ? `<tr><td><strong>Subject</strong></td><td>${escapeHtml(inquiry.subject)}</td></tr>` : ""}
-        </table>
-        <p style="white-space:pre-wrap;margin-top:16px;">${escapeHtml(inquiry.message)}</p>
-        <p style="color:#888;font-size:12px;margin-top:24px;">Manage in the <a href="${process.env.BASE_URL || "http://localhost:3000"}/coach">coach dashboard</a>.</p>
-      `,
+      html: renderEmail({
+        preheader: `${inquiry.name} — ${topicLabel.toLowerCase()} inquiry`,
+        eyebrow: `${topicLabel} inquiry`,
+        heading: `${escapeHtml(inquiry.name)} got in touch.`,
+        rows: [
+          { label: "Name", value: escapeHtml(inquiry.name) },
+          {
+            label: "Email",
+            value: `<a href="mailto:${escapeHtml(inquiry.email)}" style="color:#7c3aed;text-decoration:none;">${escapeHtml(inquiry.email)}</a>`,
+          },
+          { label: "Topic", value: escapeHtml(topicLabel) },
+          ...(inquiry.subject
+            ? [{ label: "Subject", value: escapeHtml(inquiry.subject) }]
+            : []),
+        ],
+        body: `<div style="border-left:3px solid #7c3aed;padding:2px 0 2px 16px;"><p style="margin:0;white-space:pre-wrap;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:23px;color:#1c1a26;">${escapeHtml(inquiry.message)}</p></div>`,
+        cta: { label: "Open coach dashboard", url: `${coachDashboardUrl()}` },
+        footnote: "Reply to this email to answer them directly.",
+      }),
       replyTo: inquiry.email,
     });
   } catch (err) {
