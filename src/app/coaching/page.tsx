@@ -30,6 +30,15 @@ export const metadata: Metadata = {
   title: "Coaching & Booking",
   description:
     "1-on-1, online, and hybrid coaching packages. Book a session that fits your goals and your week.",
+  alternates: {
+    canonical: "/coaching",
+  },
+  openGraph: {
+    title: "Coaching & Booking · Elek Strength",
+    description:
+      "1-on-1, online, and hybrid coaching packages. Book a session that fits your goals and your week.",
+    url: "/coaching",
+  },
 };
 
 const faqs = [

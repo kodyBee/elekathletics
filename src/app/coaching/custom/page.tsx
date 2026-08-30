@@ -16,9 +16,18 @@ import { ImagePlaceholder } from "@/components/image-placeholder";
 import { BookingForm } from "@/components/booking-form";
 
 export const metadata: Metadata = {
-  title: "Custom Plan — Free Consultation",
+  title: "Free 15-Minute Consult",
   description:
-    "Book a free 15-minute consultation to build a coaching plan tailored to your goals and budget.",
+    "Book a free 15-minute consult with Jonny Elek. Talk through your goals and training history and leave with a recommendation on the plan that fits — no card required.",
+  alternates: {
+    canonical: "/coaching/custom",
+  },
+  openGraph: {
+    title: "Book a free 15-minute consult · Elek Strength",
+    description:
+      "Talk through your goals and training history and leave with a recommendation on the plan that fits. No pressure, no card required.",
+    url: "/coaching/custom",
+  },
 };
 
 export default function CustomPlanPage() {
@@ -39,16 +48,18 @@ export default function CustomPlanPage() {
         <div className="grid gap-10 sm:gap-12 lg:grid-cols-[1.1fr_1fr]">
           <div className="space-y-4">
             <Badge variant="outline" className="border-primary/40 text-primary">
-              Custom Plan
+              Free consult
             </Badge>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Let&apos;s talk goals.
+              Start with a free consult.
             </h1>
             <p className="text-muted-foreground">
-              Grab a time on my calendar. We&apos;ll do a quick 15-minute call to talk
-              through your training history, where you want to go, and which
-              coaching setup makes the most sense. No pressure, no credit card
-              required.
+              This is the front door — whether you already know you want the
+              Everything Included Plan, want something built around a smaller
+              budget, or have no idea yet. Grab a time on my calendar and
+              we&apos;ll do a quick 15-minute call to talk through your training
+              history, where you want to go, and which setup actually makes
+              sense for you. No pressure, no credit card required.
             </p>
             <Separator />
             <ul className="space-y-3 text-sm">
@@ -56,7 +67,8 @@ export default function CustomPlanPage() {
                 "100% free, no obligation",
                 "Discuss your specific goals",
                 "Review training history & injuries",
-                "Get a recommendation on the best plan",
+                "Leave with a recommendation — premium, custom, or in-person",
+                "Custom plans available if the Premium plan is more than you need",
               ].map((item) => (
                 <li key={item} className="flex gap-2 text-muted-foreground">
                   <Check className="mt-0.5 size-4 shrink-0 text-primary" />

@@ -86,7 +86,12 @@ export function SiteFooter() {
                 </a>
               </li>
               <li className="px-0 py-1">{siteConfig.contact.location}</li>
-              <li className="px-0 py-1">{siteConfig.contact.hours}</li>
+              <li className="px-0 py-1">
+                Mon – Fri · {siteConfig.contact.hours.weekdays}
+              </li>
+              <li className="px-0 py-1">
+                Sat · {siteConfig.contact.hours.saturday}
+              </li>
             </ul>
             <div className="flex items-center gap-1 pt-1">
               <a
@@ -106,9 +111,7 @@ export function SiteFooter() {
 
         <div className="flex flex-col items-start justify-between gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center safe-pb">
           <p>© {year} {siteConfig.name}. All rights reserved.</p>
-          <p>
-            Built with Next.js & shadcn/ui — designed for hard work.
-          </p>
+          <p>Personal training in Burbank &amp; the greater Los Angeles area.</p>
         </div>
       </div>
     </footer>

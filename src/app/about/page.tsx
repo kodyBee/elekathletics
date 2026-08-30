@@ -27,7 +27,16 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About & Contact",
   description:
-    "Meet your coach and get in touch. Studio location, hours, and a direct line to ask anything.",
+    "Meet Jonny Elek — personal trainer, online coach, and competitive bodybuilder in Burbank, CA. Studio location, hours, and a direct line to ask anything.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "About Jonny Elek · Elek Strength",
+    description:
+      "Marine Corps veteran, competitive bodybuilder, and personal trainer working out of Winner’s Circle in Burbank, CA.",
+    url: "/about",
+  },
 };
 
 const credentials = [
@@ -227,7 +236,11 @@ export default function AboutPage() {
                 <CardHeader>
                   <Clock className="size-5 text-primary" />
                   <CardTitle className="text-base">Hours</CardTitle>
-                  <CardDescription>{siteConfig.contact.hours}</CardDescription>
+                  <CardDescription>
+                    Mon – Fri · {siteConfig.contact.hours.weekdays}
+                    <br />
+                    Sat · {siteConfig.contact.hours.saturday}
+                  </CardDescription>
                 </CardHeader>
               </Card>
             </div>
