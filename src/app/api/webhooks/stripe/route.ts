@@ -60,7 +60,11 @@ export async function POST(request: NextRequest) {
         // Email Elek so he can add the client to Trainerize manually
         const booking = await getBookingById(bookingId);
         if (booking) {
-          sendPaidBookingNotification(booking).catch(() => {});
+          // Awaited — see the note in api/checkout. Stripe allows far longer
+          // than a couple of email sends before it treats this as a timeout.
+          await sendPaidBookingNotification(booking).catch((err) =>
+            console.error("[Stripe Webhook] paid booking email failed:", err)
+          );
         }
       } else {
         console.warn(

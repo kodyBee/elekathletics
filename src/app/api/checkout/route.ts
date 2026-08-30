@@ -63,8 +63,13 @@ export async function POST(request: NextRequest) {
   if (isFreeConsultation) {
     await confirmBooking(booking.id, "free_consultation");
 
-    // Fire-and-forget — emails coach + client with ICS attachments
-    sendConsultationEmails(booking).catch(() => {});
+    // Awaited, not fire-and-forget: this runs on a serverless function that
+    // can be frozen the moment the response is sent, which would abandon the
+    // in-flight Resend requests. The catch keeps a send failure from turning a
+    // successful booking into a 500, but logs it instead of swallowing it.
+    await sendConsultationEmails(booking).catch((err) =>
+      console.error("[Checkout] consultation emails failed:", err)
+    );
 
     return Response.json(
       {
