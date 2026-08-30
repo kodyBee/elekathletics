@@ -43,6 +43,67 @@ function fromAddress(): string {
   return process.env.EMAIL_FROM || "Elek Athletics <onboarding@resend.dev>";
 }
 
+/** Bare address from either `addr@x.com` or `Name <addr@x.com>`. */
+function mailboxOf(addr: string): string {
+  const angled = addr.match(/<([^>]+)>/);
+  return (angled ? angled[1] : addr).trim().toLowerCase();
+}
+
+/**
+ * Decides who the two coach-facing emails are sent *from*.
+ *
+ * Kept pure so the collision rule can be reasoned about on its own; the env
+ * lookups live in `coachNotificationFrom()`.
+ */
+export function pickCoachNotificationFrom(opts: {
+  explicit?: string;
+  from: string;
+  coachTo: string;
+}): { from: string; substituted: boolean } {
+  // An explicit setting always wins — the operator gets the last word.
+  if (opts.explicit) return { from: opts.explicit, substituted: false };
+
+  if (mailboxOf(opts.from) !== mailboxOf(opts.coachTo)) {
+    return { from: opts.from, substituted: false };
+  }
+
+  const domain = mailboxOf(opts.coachTo).split("@")[1];
+  return { from: `Elek Athletics <hello@${domain}>`, substituted: true };
+}
+
+let _warnedSelfAddressed = false;
+
+/**
+ * Sender for the emails that go *to* Elek.
+ *
+ * If these went out from the same mailbox they arrive at, he'd be receiving
+ * mail from himself relayed by third-party infrastructure. Google Workspace
+ * — which hosts this domain — treats that as domain spoofing and can
+ * quarantine it even when DMARC passes. The booking notification is the one
+ * email he cannot afford to miss, so a collision is broken rather than sent.
+ *
+ * Replies still reach the right person: both coach emails set `replyTo` to
+ * the client, so this address is never the one anyone answers.
+ */
+function coachNotificationFrom(): string {
+  const { from, substituted } = pickCoachNotificationFrom({
+    explicit: process.env.COACH_NOTIFICATION_FROM,
+    from: fromAddress(),
+    coachTo: coachEmail(),
+  });
+
+  if (substituted && !_warnedSelfAddressed) {
+    console.warn(
+      `[Email] EMAIL_FROM and COACH_EMAIL resolve to the same mailbox, so coach ` +
+        `notifications would be self-addressed. Sending them from ${from} instead. ` +
+        `Set COACH_NOTIFICATION_FROM to choose a different sender.`
+    );
+    _warnedSelfAddressed = true;
+  }
+
+  return from;
+}
+
 // ─── Formatters ─────────────────────────────────────────────────────────────
 
 function formatTime12h(time24: string): string {
@@ -165,7 +226,7 @@ export async function sendConsultationEmails(booking: Booking): Promise<void> {
   // → Coach
   try {
     await resend.emails.send({
-      from: fromAddress(),
+      from: coachNotificationFrom(),
       to: coachEmail(),
       subject: `New consult booked: ${booking.name} — ${when}`,
       html: renderEmail({
@@ -246,7 +307,7 @@ export async function sendInquiryNotification(inquiry: Inquiry): Promise<void> {
 
   try {
     await resend.emails.send({
-      from: fromAddress(),
+      from: coachNotificationFrom(),
       to: coachEmail(),
       subject,
       html: renderEmail({
