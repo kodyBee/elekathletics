@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -37,6 +37,7 @@ export default function CoachDashboard() {
   const [paymentLink, setPaymentLink] = useState("");
   const [loadingLink, setLoadingLink] = useState(false);
   const [copied, setCopied] = useState(false);
+  const linkInputRef = useRef<HTMLInputElement>(null);
 
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(true);
@@ -133,12 +134,42 @@ export default function CoachDashboard() {
     setLoadingLink(false);
   };
 
-  const handleCopyLink = () => {
-    if (paymentLink) {
-      navigator.clipboard.writeText(paymentLink);
+  const handleCopyLink = async () => {
+    if (!paymentLink) return;
+
+    // Select the field first. It is the visible affordance, and it leaves the
+    // link ready to copy by hand if every programmatic route is refused.
+    linkInputRef.current?.select();
+
+    const succeed = () => {
       setCopied(true);
       toast.success("Link copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
+    };
+
+    try {
+      // `navigator.clipboard` is undefined outside a secure context — plain
+      // HTTP on anything but localhost — so this is a feature check, not
+      // defensive noise. Reading `.writeText` off undefined would throw.
+      if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
+      await navigator.clipboard.writeText(paymentLink);
+      succeed();
+      return;
+    } catch {
+      // Deprecated, but it is the only thing that works without a secure
+      // context, and the text is already selected for it to act on.
+      let copiedViaFallback = false;
+      try {
+        copiedViaFallback = document.execCommand("copy");
+      } catch {
+        copiedViaFallback = false;
+      }
+
+      if (copiedViaFallback) {
+        succeed();
+      } else {
+        toast.error("Couldn't copy automatically — the link is selected, press Ctrl+C.");
+      }
     }
   };
 
@@ -213,7 +244,12 @@ export default function CoachDashboard() {
               <div className="mt-6 p-4 rounded-lg bg-background/50 border border-border/60">
                 <Label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Payment Link Ready</Label>
                 <div className="flex gap-2">
-                  <Input readOnly value={paymentLink} className="bg-background font-mono text-xs" />
+                  <Input
+                    ref={linkInputRef}
+                    readOnly
+                    value={paymentLink}
+                    className="bg-background font-mono text-xs"
+                  />
                   <Button variant="secondary" size="icon" onClick={handleCopyLink} title="Copy Link" className="shrink-0">
                     {copied ? <Check className="size-4 text-green-500" /> : <Copy className="size-4" />}
                   </Button>
