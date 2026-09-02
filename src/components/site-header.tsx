@@ -41,7 +41,7 @@ function BrandMark({ className }: { className?: string }) {
         />
       </div>
       <span className="text-base tracking-wide uppercase">
-        {siteConfig.shortName}
+        {siteConfig.name}
         <span className="text-primary">.</span>
       </span>
     </Link>
